@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { 
   Palette, 
@@ -36,9 +36,20 @@ export const StoreSettingsManager: React.FC = () => {
     bank_id: settings.bank_id || 'MBBank',
     bank_account: settings.bank_account || '2222226062005',
     bank_owner: settings.bank_owner || 'DANG BINH DUONG',
-    sepay_api_token: settings.sepay_api_token || '',
+    sepay_api_token: settings.sepay_api_token || import.meta.env.VITE_SEPAY_API_TOKEN || '',
     auto_check_payment: settings.auto_check_payment ?? true,
   });
+
+  useEffect(() => {
+    setFormData({
+      ...settings,
+      bank_id: settings.bank_id || 'MBBank',
+      bank_account: settings.bank_account || '2222226062005',
+      bank_owner: settings.bank_owner || 'DANG BINH DUONG',
+      sepay_api_token: settings.sepay_api_token || import.meta.env.VITE_SEPAY_API_TOKEN || '',
+      auto_check_payment: settings.auto_check_payment ?? true,
+    });
+  }, [settings]);
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [copiedWebhook, setCopiedWebhook] = useState(false);
   const [showAdvancedWebhook, setShowAdvancedWebhook] = useState(false);

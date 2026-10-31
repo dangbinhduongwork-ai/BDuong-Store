@@ -1,11 +1,14 @@
 import { Product, StoreSettings, Order, UserProfile } from '../types';
 import { supabase, isSupabaseConfigured } from './supabase';
-import { INITIAL_SETTINGS, INITIAL_PRODUCTS, INITIAL_ORDERS, DEMO_ADMIN, DEMO_CUSTOMER } from './initialData';
+import { INITIAL_SETTINGS, INITIAL_PRODUCTS, INITIAL_ORDERS } from './initialData';
 
 const SETTINGS_KEY = 'bduong_store_settings';
 const PRODUCTS_KEY = 'bduong_store_products';
 const ORDERS_KEY = 'bduong_store_orders';
 const USER_KEY = 'bduong_store_user';
+
+const isUuid = (val?: string) => 
+  Boolean(val && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val));
 
 export class AppStore {
   // Check if we are using real Supabase or fallback
@@ -21,7 +24,13 @@ export class AppStore {
           .from('store_settings')
           .select('*')
           .single();
-        if (data && !error) return data as StoreSettings;
+        if (data && !error) {
+          const settings = data as StoreSettings;
+          if (!settings.sepay_api_token && import.meta.env.VITE_SEPAY_API_TOKEN) {
+            settings.sepay_api_token = import.meta.env.VITE_SEPAY_API_TOKEN;
+          }
+          return settings;
+        }
       } catch (e) {
         console.warn('Failed to fetch settings from Supabase, using local fallback:', e);
       }
@@ -77,7 +86,10 @@ export class AppStore {
           .from('products')
           .select('*')
           .order('created_at', { ascending: false });
-        if (data && !error && data.length > 0) return data as Product[];
+        if (data && !error) {
+          localStorage.setItem(PRODUCTS_KEY, JSON.stringify(data));
+          return data as Product[];
+        }
       } catch (e) {
         console.warn('Failed to fetch products from Supabase, using local fallback:', e);
       }
@@ -97,6 +109,8 @@ export class AppStore {
   static async saveProduct(product: Partial<Product>): Promise<Product> {
     const products = await this.getProducts();
     let savedProduct: Product;
+    const generateFallbackId = () => 
+      (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'prod-' + Date.now();
 
     if (product.id) {
       // Update
@@ -122,9 +136,9 @@ export class AppStore {
         products.unshift(savedProduct);
       }
     } else {
-      // Create
+      // Create new
       savedProduct = {
-        id: 'prod-' + Date.now(),
+        id: generateFallbackId(),
         name: product.name || 'Sản phẩm mới',
         category: product.category || 'entertainment',
         price: product.price || 0,
@@ -139,11 +153,34 @@ export class AppStore {
       products.unshift(savedProduct);
     }
 
+    // Sync to Supabase
     if (this.isRealBackend() && supabase) {
       try {
-        await supabase.from('products').upsert(savedProduct);
+        if (product.id && isUuid(product.id)) {
+          // Update existing UUID product in Supabase
+          const { data, error } = await supabase
+            .from('products')
+            .upsert(savedProduct)
+            .select()
+            .single();
+          if (data && !error) savedProduct = data as Product;
+          if (error) console.error('Supabase upsert error:', error);
+        } else {
+          // Insert new product: omit fake id so PostgreSQL generates a genuine UUID
+          const { id: _ignore, ...newProductData } = savedProduct;
+          const { data, error } = await supabase
+            .from('products')
+            .insert(newProductData)
+            .select()
+            .single();
+          if (data && !error) {
+            savedProduct = data as Product;
+            products[0] = savedProduct;
+          }
+          if (error) console.error('Supabase insert error:', error);
+        }
       } catch (e) {
-        console.warn('Failed to save product in Supabase:', e);
+        console.error('Failed to save product in Supabase:', e);
       }
     }
 
@@ -155,11 +192,12 @@ export class AppStore {
     let products = await this.getProducts();
     products = products.filter((p) => p.id !== id);
 
-    if (this.isRealBackend() && supabase) {
+    if (this.isRealBackend() && supabase && isUuid(id)) {
       try {
-        await supabase.from('products').delete().eq('id', id);
+        const { error } = await supabase.from('products').delete().eq('id', id);
+        if (error) console.error('Supabase delete error:', error);
       } catch (e) {
-        console.warn('Failed to delete product in Supabase:', e);
+        console.error('Failed to delete product in Supabase:', e);
       }
     }
 
@@ -194,20 +232,31 @@ export class AppStore {
 
   static async createOrder(orderData: Omit<Order, 'id' | 'created_at'>): Promise<Order> {
     const orders = await this.getOrders();
-    const newOrder: Order = {
+    const newId = (typeof crypto !== 'undefined' && crypto.randomUUID) ? crypto.randomUUID() : 'ord-' + Date.now();
+    let newOrder: Order = {
       ...orderData,
-      id: 'ord-' + Date.now(),
+      id: newId,
       created_at: new Date().toISOString(),
     };
 
     if (this.isRealBackend() && supabase) {
       try {
-        const { data } = await supabase
+        const { id: _ignore, ...supabasePayload } = newOrder;
+        // If product_id is not a valid UUID, omit it to avoid foreign key violation
+        if (!isUuid(supabasePayload.product_id)) {
+          delete (supabasePayload as any).product_id;
+        }
+        if (!isUuid(supabasePayload.user_id)) {
+          delete (supabasePayload as any).user_id;
+        }
+
+        const { data, error } = await supabase
           .from('orders')
-          .insert(newOrder)
+          .insert(supabasePayload)
           .select()
           .single();
-        if (data) return data as Order;
+        if (data && !error) newOrder = data as Order;
+        if (error) console.warn('Supabase order insert warning:', error);
       } catch (e) {
         console.warn('Failed to insert order in Supabase:', e);
       }
@@ -253,11 +302,10 @@ export class AppStore {
       const prod = products[productIndex];
       const stock = [...(prod.stock_data || [])];
       if (stock.length > 0) {
-        // Pop first account
         credential = stock.shift() || '';
         prod.stock_data = stock;
         products[productIndex] = prod;
-        localStorage.setItem(PRODUCTS_KEY, JSON.stringify(products));
+        await this.saveProduct(prod);
       } else {
         credential = `Hệ thống đang chuẩn bị kho bổ sung cho sản phẩm "${order.product_name}". Vui lòng liên hệ Admin qua Zalo/Telegram với mã đơn ${order.order_code} để được cấp ngay lập tức!`;
       }
@@ -268,8 +316,19 @@ export class AppStore {
     order.status = 'completed';
     order.delivered_credential = credential;
     orders[orderIndex] = order;
-    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
 
+    if (this.isRealBackend() && supabase) {
+      try {
+        await supabase
+          .from('orders')
+          .update({ status: 'completed', delivered_credential: credential })
+          .eq('order_code', orderCode);
+      } catch (e) {
+        console.warn('Failed to update order status in Supabase:', e);
+      }
+    }
+
+    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
     return { success: true, credential };
   }
 
@@ -278,7 +337,7 @@ export class AppStore {
     const index = orders.findIndex((o) => o.id === orderId);
     if (index >= 0) {
       orders[index].status = status;
-      if (this.isRealBackend() && supabase) {
+      if (this.isRealBackend() && supabase && isUuid(orderId)) {
         try {
           await supabase.from('orders').update({ status }).eq('id', orderId);
         } catch (e) {
@@ -312,4 +371,3 @@ export class AppStore {
     }
   }
 }
-

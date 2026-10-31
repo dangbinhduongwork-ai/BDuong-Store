@@ -87,9 +87,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setCheckCount((prev) => prev + 1);
 
       // 1. Check if SePay API Token is provided
-      if (settings.sepay_api_token) {
+      const sepayToken = settings.sepay_api_token || import.meta.env.VITE_SEPAY_API_TOKEN;
+      if (sepayToken) {
         try {
-          const res = await verifyPaymentWithSepay(settings.sepay_api_token, orderCode, product.price);
+          const res = await verifyPaymentWithSepay(sepayToken, orderCode, product.price);
           if (res.paid && !isDeliveredRef.current) {
             isDeliveredRef.current = true;
             setIsProcessing(true);
