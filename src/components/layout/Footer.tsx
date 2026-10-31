@@ -1,0 +1,63 @@
+import React from 'react';
+import { ShieldCheck, Zap, Heart, Lock } from 'lucide-react';
+import { useStore } from '../../context/StoreContext';
+
+export const Footer: React.FC = () => {
+  const { settings } = useStore();
+
+  return (
+    <footer className="mt-20 border-t border-black/5 dark:border-white/10 bg-[#F5F5F7] dark:bg-[#000000] text-gray-500 dark:text-gray-400 text-xs py-12 transition-colors">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Value Propositions Bento Strip */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pb-10 border-b border-black/5 dark:border-white/5 text-center md:text-left">
+          <div className="flex items-center space-x-3.5 p-4 rounded-2xl bg-white/60 dark:bg-white/[0.03] border border-black/5 dark:border-white/5">
+            <div className="w-10 h-10 rounded-xl bg-accent-subtle text-accent flex items-center justify-center shrink-0">
+              <Zap className="w-5 h-5" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Giao Hàng Tự Động 10 Giây</h5>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Hệ thống xử lý thanh toán VietQR và trả tài khoản ngay lập tức</p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3.5 p-4 rounded-2xl bg-white/60 dark:bg-white/[0.03] border border-black/5 dark:border-white/5">
+            <div className="w-10 h-10 rounded-xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
+              <ShieldCheck className="w-5 h-5" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Bảo Hành 1 Đổi 1 Trọn Thời Gian</h5>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Cam kết hoàn tiền hoặc đổi tài khoản mới nếu xảy ra bất kỳ sự cố nào</p>
+            </div>
+          </div>
+
+          <div className="flex items-center space-x-3.5 p-4 rounded-2xl bg-white/60 dark:bg-white/[0.03] border border-black/5 dark:border-white/5">
+            <div className="w-10 h-10 rounded-xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
+              <Lock className="w-5 h-5" strokeWidth={1.5} />
+            </div>
+            <div>
+              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Bảo Mật & An Toàn Tuyệt Đối</h5>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Không giữ mật khẩu cá nhân, mã hóa dữ liệu đơn hàng của khách hàng</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Footer Details */}
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px]">
+          <p>
+            © {new Date().getFullYear()} {settings.store_name}. Thiết kế theo phong cách Apple Human Interface Guidelines.
+          </p>
+          <div className="flex items-center space-x-4">
+            <span>Thanh toán VietQR 24/7</span>
+            <span>•</span>
+            <span>Hỗ trợ kỹ thuật Zalo / Telegram</span>
+            <span>•</span>
+            <span className="flex items-center gap-1 text-accent">
+              Made with <Heart className="w-3 h-3 fill-current" /> by BDuong
+            </span>
+          </div>
+        </div>
+      </div>
+    </footer>
+  );
+};
+
