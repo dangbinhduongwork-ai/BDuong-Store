@@ -291,7 +291,7 @@ export class AppStore {
     return false;
   }
 
-  // --- USER PROFILE & DEMO AUTH ---
+  // --- USER PROFILE & AUTH ---
   static getCurrentUser(): UserProfile | null {
     const stored = localStorage.getItem(USER_KEY);
     if (stored) {
@@ -301,8 +301,7 @@ export class AppStore {
         // fallback
       }
     }
-    // Default to Customer Demo for immediate seamless review
-    return DEMO_CUSTOMER;
+    return null;
   }
 
   static setCurrentUser(user: UserProfile | null): void {
@@ -310,19 +309,6 @@ export class AppStore {
       localStorage.setItem(USER_KEY, JSON.stringify(user));
     } else {
       localStorage.removeItem(USER_KEY);
-    }
-  }
-
-  static switchRole(role: 'admin' | 'customer' | 'guest'): UserProfile | null {
-    if (role === 'admin') {
-      this.setCurrentUser(DEMO_ADMIN);
-      return DEMO_ADMIN;
-    } else if (role === 'customer') {
-      this.setCurrentUser(DEMO_CUSTOMER);
-      return DEMO_CUSTOMER;
-    } else {
-      this.setCurrentUser(null);
-      return null;
     }
   }
 }

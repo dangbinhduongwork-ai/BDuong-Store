@@ -2,15 +2,11 @@ import React, { useState } from 'react';
 import { 
   Sun, 
   Moon, 
-  ShoppingBag, 
   Shield, 
   User, 
-  ChevronDown, 
-  LogOut, 
   Layers, 
-  Clock, 
-  Sparkles,
-  CheckCircle2
+  CheckCircle2,
+  LogOut
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { AuthModal } from '../common/AuthModal';
@@ -21,9 +17,8 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) => {
-  const { user, settings, isDarkMode, toggleDarkMode, switchRole, orders } = useStore();
+  const { user, settings, isDarkMode, toggleDarkMode, orders, logout } = useStore();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
-  const [isRoleDropdownOpen, setIsRoleDropdownOpen] = useState(false);
 
   // Orders count for badge
   const completedOrdersCount = orders.filter(o => o.status === 'completed').length;
@@ -112,71 +107,37 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
               )}
             </button>
 
-            {/* Quick Role Switcher Pill (Great for reviewer) */}
-            <div className="relative">
-              <button
-                onClick={() => setIsRoleDropdownOpen(!isRoleDropdownOpen)}
-                className="px-2.5 py-1.5 rounded-full bg-black/[0.04] dark:bg-white/[0.08] text-xs font-medium flex items-center space-x-1.5 text-gray-700 dark:text-gray-300 hover:bg-black/[0.08] dark:hover:bg-white/[0.12] transition-colors border border-black/5 dark:border-white/5"
-              >
-                <span className="text-xs">
-                  {user?.role === 'admin' ? '👑 Admin' : user ? '👤 Khách' : '🚪 Vãng lai'}
-                </span>
-                <ChevronDown className="w-3 h-3 text-gray-400" strokeWidth={1.5} />
-              </button>
-
-              {isRoleDropdownOpen && (
-                <div 
-                  className="absolute right-0 mt-2 w-44 glass-modal rounded-2xl p-1.5 shadow-xl border border-black/10 dark:border-white/10 z-50 text-xs animate-scale-in"
-                  onMouseLeave={() => setIsRoleDropdownOpen(false)}
-                >
-                  <div className="px-2.5 py-1.5 text-[10px] text-gray-400 font-semibold tracking-wider uppercase border-b border-black/5 dark:border-white/5 mb-1">
-                    Chuyển Quyền Nhanh
-                  </div>
-                  <button
-                    onClick={() => {
-                      switchRole('admin');
-                      setIsRoleDropdownOpen(false);
-                      setCurrentView('admin');
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.08] flex items-center space-x-2 text-gray-700 dark:text-gray-200 font-medium"
-                  >
-                    <span>👑</span>
-                    <span>Admin (Toàn quyền)</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      switchRole('customer');
-                      setIsRoleDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.08] flex items-center space-x-2 text-gray-700 dark:text-gray-200 font-medium"
-                  >
-                    <span>👤</span>
-                    <span>Khách Mua Hàng</span>
-                  </button>
-                  <button
-                    onClick={() => {
-                      switchRole('guest');
-                      setIsRoleDropdownOpen(false);
-                    }}
-                    className="w-full text-left px-2.5 py-1.5 rounded-xl hover:bg-black/[0.05] dark:hover:bg-white/[0.08] flex items-center space-x-2 text-red-600 dark:text-red-400 font-medium"
-                  >
-                    <span>🚪</span>
-                    <span>Khách Vãng Lai</span>
-                  </button>
-                </div>
-              )}
-            </div>
-
             {/* Auth / Profile Button */}
-            <button
-              onClick={() => setIsAuthOpen(true)}
-              className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-accent-subtle text-accent hover:bg-accent/20 transition-all text-xs font-semibold"
-            >
-              <User className="w-3.5 h-3.5" strokeWidth={1.5} />
-              <span className="hidden sm:inline">
-                {user ? (user.role === 'admin' ? 'Admin' : 'Tài khoản') : 'Đăng Nhập'}
-              </span>
-            </button>
+            {user ? (
+              <div className="flex items-center space-x-1.5">
+                <button
+                  onClick={() => setIsAuthOpen(true)}
+                  className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-accent-subtle text-accent hover:bg-accent/20 transition-all text-xs font-semibold"
+                >
+                  <div className="w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center text-[10px] font-bold">
+                    {user.email.charAt(0).toUpperCase()}
+                  </div>
+                  <span className="max-w-[120px] truncate hidden sm:inline">
+                    {user.email}
+                  </span>
+                </button>
+                <button
+                  onClick={() => logout()}
+                  className="p-1.5 rounded-full bg-black/[0.04] dark:bg-white/[0.08] text-gray-400 hover:text-red-500 transition-colors"
+                  title="Đăng xuất"
+                >
+                  <LogOut className="w-3.5 h-3.5" strokeWidth={1.5} />
+                </button>
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsAuthOpen(true)}
+                className="flex items-center space-x-1.5 px-3.5 py-1.5 rounded-full btn-accent font-semibold text-xs shadow-sm"
+              >
+                <User className="w-3.5 h-3.5" strokeWidth={1.5} />
+                <span>Đăng Nhập</span>
+              </button>
+            )}
           </div>
         </div>
 
@@ -221,4 +182,3 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
     </>
   );
 };
-

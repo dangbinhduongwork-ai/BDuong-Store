@@ -2,9 +2,12 @@
   "framework": "vite",
   "rewrites": [
     {
+      "source": "/api/sepay/:path*",
+      "destination": "https://my.sepay.vn/userapi/:path*"
+    },
+    {
       "source": "/(.*)",
       "destination": "/index.html"
     }
   ]
 }
-

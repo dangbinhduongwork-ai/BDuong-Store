@@ -21,7 +21,6 @@ interface StoreContextType {
   createOrder: (order: Omit<Order, 'id' | 'created_at'>) => Promise<Order>;
   deliverOrder: (orderCode: string) => Promise<{ success: boolean; credential?: string; message?: string }>;
   updateOrderStatus: (orderId: string, status: Order['status']) => Promise<boolean>;
-  switchRole: (role: 'admin' | 'customer' | 'guest') => void;
   loginWithSupabase: (email: string, pass: string) => Promise<{ error?: string }>;
   registerWithSupabase: (email: string, pass: string) => Promise<{ error?: string }>;
   logout: () => Promise<void>;
@@ -36,11 +35,13 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     theme_mode: 'light',
     accent_color: '#0071E3',
     bank_id: 'MBBank',
-    bank_account: '0987654321',
-    bank_owner: 'NGUYEN VAN BDUONG',
-    support_zalo: 'https://zalo.me/0987654321',
+    bank_account: '2222226062005',
+    bank_owner: 'DANG BINH DUONG',
+    support_zalo: 'https://zalo.me/2222226062005',
     support_telegram: 'https://t.me/bduongstore',
     announcement: '🔥 Chào mừng đến với BDuong Store - Cam kết bảo hành 1 đổi 1 suốt thời gian sử dụng!',
+    sepay_api_token: import.meta.env.VITE_SEPAY_API_TOKEN || '',
+    auto_check_payment: true,
   });
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
@@ -181,25 +182,15 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return ok;
   };
 
-  const switchRole = (role: 'admin' | 'customer' | 'guest') => {
-    const switched = AppStore.switchRole(role);
-    setUser(switched);
-  };
-
   const loginWithSupabase = async (email: string, pass: string) => {
     if (!isSupabaseConfigured || !supabase) {
-      // Mock login
-      if (email.toLowerCase().includes('admin')) {
-        switchRole('admin');
-      } else {
-        const customUser: UserProfile = {
-          id: 'usr-' + Date.now(),
-          email,
-          role: 'customer',
-        };
-        setUser(customUser);
-        AppStore.setCurrentUser(customUser);
-      }
+      const customUser: UserProfile = {
+        id: 'usr-' + Date.now(),
+        email,
+        role: email.toLowerCase().includes('admin') ? 'admin' : 'customer',
+      };
+      setUser(customUser);
+      AppStore.setCurrentUser(customUser);
       return {};
     }
     const { data, error } = await supabase.auth.signInWithPassword({
@@ -283,7 +274,6 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         createOrder,
         deliverOrder,
         updateOrderStatus,
-        switchRole,
         loginWithSupabase,
         registerWithSupabase,
         logout,

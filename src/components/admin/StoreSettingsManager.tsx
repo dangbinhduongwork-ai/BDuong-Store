@@ -42,8 +42,6 @@ export const StoreSettingsManager: React.FC = () => {
   const [savedSuccess, setSavedSuccess] = useState(false);
   const [copiedWebhook, setCopiedWebhook] = useState(false);
   const [showAdvancedWebhook, setShowAdvancedWebhook] = useState(false);
-  const [testOrderCode, setTestOrderCode] = useState('');
-  const [testResult, setTestResult] = useState<string | null>(null);
 
   const handleAccentChange = (hex: string) => {
     setFormData((prev) => ({ ...prev, accent_color: hex }));
@@ -69,21 +67,6 @@ export const StoreSettingsManager: React.FC = () => {
     navigator.clipboard.writeText(webhookUrl);
     setCopiedWebhook(true);
     setTimeout(() => setCopiedWebhook(false), 2000);
-  };
-
-  const handleTestWebhook = async () => {
-    const code = testOrderCode.trim() || orders.find(o => o.status === 'pending')?.order_code;
-    if (!code) {
-      setTestResult('Vui lòng tạo một đơn hàng thử nghiệm trước.');
-      return;
-    }
-    setTestResult('Đang xử lý...');
-    const res = await deliverOrder(code);
-    if (res.success) {
-      setTestResult(`✅ Thành công! Đơn ${code} đã kích hoạt và giao tài khoản.`);
-    } else {
-      setTestResult(`❌ Lỗi: ${res.message || 'Không thể xử lý'}`);
-    }
   };
 
   return (
@@ -330,7 +313,7 @@ export const StoreSettingsManager: React.FC = () => {
               </div>
             </div>
 
-            {/* OPTIONAL ADVANCED: WEBHOOK SECTION (COLLAPSIBLE) */}
+            {/* OPTIONAL ADVANCED: WEBHOOK URL (COLLAPSIBLE) */}
             <div className="border border-black/5 dark:border-white/5 rounded-2xl overflow-hidden">
               <button
                 type="button"
@@ -339,14 +322,14 @@ export const StoreSettingsManager: React.FC = () => {
               >
                 <span className="flex items-center gap-1.5">
                   <Webhook className="w-3 h-3" />
-                  <span>Tùy chọn nâng cao: Cài đặt Webhook (Nếu bạn có server riêng)</span>
+                  <span>Webhook URL (Dành cho SePay Webhook)</span>
                 </span>
                 {showAdvancedWebhook ? <ChevronUp className="w-3.5 h-3.5" /> : <ChevronDown className="w-3.5 h-3.5" />}
               </button>
 
               {showAdvancedWebhook && (
                 <div className="p-3 bg-black/[0.01] dark:bg-white/[0.01] space-y-2 text-[10px] text-gray-500">
-                  <p>URL Webhook Supabase (Dán vào mục Webhook trên my.sepay.vn nếu muốn):</p>
+                  <p>Nếu bạn muốn SePay gửi Webhook trực tiếp tới máy chủ, hãy dán URL này vào SePay:</p>
                   <div className="flex items-center space-x-1.5">
                     <input
                       type="text"
@@ -362,24 +345,6 @@ export const StoreSettingsManager: React.FC = () => {
                       {copiedWebhook ? 'Đã chép' : 'Chép'}
                     </button>
                   </div>
-
-                  <div className="pt-2 border-t border-black/5 flex items-center space-x-2">
-                    <input
-                      type="text"
-                      value={testOrderCode}
-                      onChange={(e) => setTestOrderCode(e.target.value)}
-                      placeholder="Mã đơn test..."
-                      className="flex-1 px-2 py-1 rounded bg-white dark:bg-black/40 border text-[10px]"
-                    />
-                    <button
-                      type="button"
-                      onClick={handleTestWebhook}
-                      className="px-2.5 py-1 rounded btn-accent font-semibold text-[10px]"
-                    >
-                      Bắn Thử
-                    </button>
-                  </div>
-                  {testResult && <p className="text-emerald-600 font-medium">{testResult}</p>}
                 </div>
               )}
             </div>

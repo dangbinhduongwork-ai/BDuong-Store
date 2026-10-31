@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
-import { X, Mail, Lock, Shield, CheckCircle, ArrowRight, UserCheck } from 'lucide-react';
+import { X, Mail, Lock, Shield, ArrowRight } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
-import { isSupabaseConfigured } from '../../lib/supabase';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -9,7 +8,7 @@ interface AuthModalProps {
 }
 
 export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
-  const { user, loginWithSupabase, registerWithSupabase, switchRole, logout } = useStore();
+  const { user, loginWithSupabase, registerWithSupabase, logout } = useStore();
   const [isRegister, setIsRegister] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -44,11 +43,6 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleQuickDemo = (role: 'admin' | 'customer') => {
-    switchRole(role);
-    onClose();
   };
 
   return (
@@ -88,13 +82,13 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             <div className="p-4 rounded-2xl bg-black/5 dark:bg-white/5 border border-black/5 dark:border-white/10">
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-3">
-                  <div className="w-10 h-10 rounded-full bg-accent-subtle text-accent flex items-center justify-center font-medium">
+                  <div className="w-10 h-10 rounded-full bg-accent text-white flex items-center justify-center font-bold">
                     {user.email.charAt(0).toUpperCase()}
                   </div>
                   <div>
-                    <p className="text-sm font-medium">{user.email}</p>
+                    <p className="text-sm font-semibold">{user.email}</p>
                     <span className="inline-flex items-center text-xs font-semibold px-2 py-0.5 rounded-full bg-accent-subtle text-accent mt-0.5">
-                      {user.role === 'admin' ? '👑 Quản Trị Viên (Admin)' : '👤 Khách Hàng (Customer)'}
+                      {user.role === 'admin' ? '👑 Quản Trị Viên' : '👤 Khách Hàng'}
                     </span>
                   </div>
                 </div>
@@ -114,7 +108,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
             </div>
           </div>
         ) : (
-          /* Normal Auth Form */
+          /* Real Auth Form */
           <form onSubmit={handleSubmit} className="space-y-4">
             {error && (
               <div className="p-3 rounded-xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs">
@@ -161,7 +155,7 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               disabled={loading}
               className="w-full py-3 rounded-xl btn-accent font-medium text-sm flex items-center justify-center space-x-2 shadow-sm disabled:opacity-50"
             >
-              <span>{loading ? 'Đang xử lý...' : (isRegister ? 'Đăng Ký' : 'Đăng Nhập')}</span>
+              <span>{loading ? 'Đang xử lý...' : (isRegister ? 'Tạo Tài Khoản' : 'Đăng Nhập')}</span>
               <ArrowRight className="w-4 h-4" strokeWidth={1.5} />
             </button>
 
@@ -176,52 +170,12 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
               >
                 {isRegister
                   ? 'Đã có tài khoản? Đăng nhập ngay'
-                  : 'Chưa có tài khoản? Đăng ký nhận ưu đãi'}
+                  : 'Chưa có tài khoản? Đăng ký tại đây'}
               </button>
             </div>
           </form>
         )}
-
-        {/* Demo Fast-Switch Section (High Convenience for testing) */}
-        <div className="mt-6 pt-5 border-t border-black/5 dark:border-white/10">
-          <div className="flex items-center justify-between mb-2.5">
-            <span className="text-xs font-medium text-gray-400 uppercase tracking-wider flex items-center gap-1.5">
-              <UserCheck className="w-3.5 h-3.5" strokeWidth={1.5} />
-              Thử Nghiệm Nhanh 1-Click
-            </span>
-            {!isSupabaseConfigured && (
-              <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 font-medium">
-                Chế độ Offline Mock
-              </span>
-            )}
-          </div>
-          <div className="grid grid-cols-2 gap-2">
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('admin')}
-              className="px-3 py-2 rounded-xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] text-xs font-medium text-left flex items-center space-x-2 transition-all border border-black/5 dark:border-white/5"
-            >
-              <span className="text-base">👑</span>
-              <div>
-                <p className="font-semibold text-xs leading-none">Admin Demo</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">Quản lý kho & theme</p>
-              </div>
-            </button>
-            <button
-              type="button"
-              onClick={() => handleQuickDemo('customer')}
-              className="px-3 py-2 rounded-xl bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] text-xs font-medium text-left flex items-center space-x-2 transition-all border border-black/5 dark:border-white/5"
-            >
-              <span className="text-base">👤</span>
-              <div>
-                <p className="font-semibold text-xs leading-none">Khách Hàng Demo</p>
-                <p className="text-[10px] text-gray-400 mt-0.5">Mua hàng & bảo hành</p>
-              </div>
-            </button>
-          </div>
-        </div>
       </div>
     </div>
   );
 };
-
