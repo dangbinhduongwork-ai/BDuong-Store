@@ -240,19 +240,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   );
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/50 backdrop-blur-md transition-opacity duration-300"
         onClick={onClose}
       />
 
-      {/* Modal Dialog */}
-      <div className="relative w-full max-w-2xl sm:max-w-3xl bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-black/5 dark:border-white/10 z-10 animate-scale-in text-[#1D1D1F] dark:text-[#F5F5F7] max-h-[92vh] overflow-y-auto">
+      {/* Modal Dialog / Mobile Bottom Sheet */}
+      <div className="relative w-full max-w-2xl sm:max-w-3xl bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl rounded-t-[32px] sm:rounded-3xl p-5 sm:p-8 shadow-2xl border border-black/5 dark:border-white/10 z-10 animate-sheet-up sm:animate-scale-in text-[#1D1D1F] dark:text-[#F5F5F7] max-h-[90vh] sm:max-h-[92vh] overflow-y-auto">
+        {/* Mobile Drag Indicator Handle */}
+        <div className="w-12 h-1 bg-black/15 dark:bg-white/20 rounded-full mx-auto mb-3 sm:hidden" />
+
         {/* Close Button */}
         <button
           onClick={onClose}
-          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-400 hover:text-black dark:hover:text-white transition-colors"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-400 hover:text-black dark:hover:text-white transition-colors z-10"
         >
           <X className="w-4 h-4" strokeWidth={1.5} />
         </button>
@@ -261,12 +264,12 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
           /* STEP 1: VIETQR PAYMENT */
           <div>
             {/* Header */}
-            <div className="text-center mb-6">
-              <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-accent-subtle text-accent text-xs font-semibold mb-2">
+            <div className="text-center mb-5 sm:mb-6 pr-6 sm:pr-0">
+              <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-accent-subtle text-accent text-[11px] sm:text-xs font-semibold mb-2">
                 <QrCode className="w-3.5 h-3.5" strokeWidth={1.5} />
                 <span>Thanh Toán VietQR & Giao Hàng Tự Động</span>
               </span>
-              <h3 className="text-xl sm:text-2xl font-bold tracking-tight">
+              <h3 className="text-lg sm:text-2xl font-bold tracking-tight">
                 Quét Mã QR Nhận Tài Khoản Tức Thì
               </h3>
               <div className="flex items-center justify-center space-x-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
@@ -276,9 +279,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
 
             {/* REAL-TIME SCANNING RADAR STATUS BAR */}
-            <div className="mb-5 p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs">
-              <div className="flex items-center space-x-2.5">
-                <div className="relative flex items-center justify-center">
+            <div className="mb-4 sm:mb-5 p-2.5 sm:p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs">
+              <div className="flex items-center space-x-2 sm:space-x-2.5">
+                <div className="relative flex items-center justify-center shrink-0">
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping absolute" />
                   <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 relative" />
                 </div>
@@ -286,22 +289,22 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   <p className="font-semibold text-emerald-800 dark:text-emerald-300 text-xs">
                     Cổng tự động quét biến động số dư MBBank 24/7
                   </p>
-                  <p className="text-[11px] text-emerald-600 dark:text-emerald-400">
+                  <p className="text-[10px] sm:text-[11px] text-emerald-600 dark:text-emerald-400">
                     Hệ thống tự động kích hoạt tài khoản ngay khi ngân hàng nhận tiền.
                   </p>
                 </div>
               </div>
 
-              <span className="text-[10px] text-emerald-700 dark:text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full shrink-0">
+              <span className="text-[9px] sm:text-[10px] text-emerald-700 dark:text-emerald-400 font-mono bg-emerald-500/10 px-2 py-0.5 rounded-full shrink-0">
                 Lần quét: {checkCount}
               </span>
             </div>
 
             {/* QR Code and Bank Details */}
-            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center mb-6">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-4 sm:gap-6 items-center mb-5 sm:mb-6">
               {/* Left: Extra Large VietQR Image Container (col-span-6) */}
-              <div className="md:col-span-6 flex flex-col items-center justify-center p-4 sm:p-5 rounded-3xl bg-white dark:bg-black/50 border border-black/10 dark:border-white/10 shadow-apple-card">
-                <div className="relative w-64 h-64 sm:w-72 sm:h-72 bg-white rounded-2xl p-2 shadow-inner flex items-center justify-center overflow-hidden border border-black/5">
+              <div className="md:col-span-6 flex flex-col items-center justify-center p-3.5 sm:p-5 rounded-2xl sm:rounded-3xl bg-white dark:bg-black/50 border border-black/10 dark:border-white/10 shadow-apple-card">
+                <div className="relative w-52 h-52 sm:w-72 sm:h-72 bg-white rounded-2xl p-2 shadow-inner flex items-center justify-center overflow-hidden border border-black/5">
                   <img
                     src={qrUrl}
                     alt={`VietQR ${orderCode}`}
@@ -422,11 +425,11 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             )}
 
             {/* Action Buttons */}
-            <div className="space-y-2">
+            <div className="space-y-2 mt-2">
               <button
                 onClick={handleManualConfirm}
                 disabled={isProcessing}
-                className="w-full py-3.5 rounded-2xl btn-accent font-semibold text-sm flex items-center justify-center space-x-2 shadow-apple-card disabled:opacity-50"
+                className="w-full py-3 sm:py-3.5 rounded-2xl btn-accent font-semibold text-xs sm:text-sm flex items-center justify-center space-x-2 shadow-apple-card disabled:opacity-50 active:scale-98"
               >
                 {isProcessing ? (
                   <>
@@ -440,7 +443,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   </>
                 )}
               </button>
-              <p className="text-[11px] text-gray-400 text-center">
+              <p className="text-[10px] sm:text-[11px] text-gray-400 text-center leading-relaxed">
                 🔒 Hệ thống đối soát trực tiếp sao kê MBBank 2222226062005. Đơn hàng chỉ được giao khi ngân hàng ghi nhận đúng số tiền.
               </p>
             </div>

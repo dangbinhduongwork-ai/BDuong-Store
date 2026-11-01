@@ -1,16 +1,33 @@
-import React, { useState } from 'react';
-import { MessageSquare, X, Send, ShieldCheck, PhoneCall, ExternalLink, HelpCircle } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { MessageSquare, X, Send, ShieldCheck, PhoneCall, ExternalLink } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 
 export const FloatingSupport: React.FC = () => {
   const [isOpen, setIsOpen] = useState(false);
   const { settings } = useStore();
 
+  useEffect(() => {
+    const handleOpen = () => setIsOpen(true);
+    window.addEventListener('open-support', handleOpen);
+    return () => window.removeEventListener('open-support', handleOpen);
+  }, []);
+
   return (
-    <div className="fixed bottom-6 right-6 z-40">
-      {/* Popover Card */}
+    <>
+      {/* Mobile Backdrop when modal open */}
       {isOpen && (
-        <div className="mb-3 w-80 sm:w-96 glass-modal rounded-3xl p-5 shadow-2xl border border-black/10 dark:border-white/10 animate-scale-in text-[#1D1D1F] dark:text-[#F5F5F7]">
+        <div 
+          className="fixed inset-0 bg-black/45 backdrop-blur-sm z-50 md:hidden transition-opacity"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Popover / Sheet Card */}
+      {isOpen && (
+        <div className="fixed inset-x-3 bottom-20 md:bottom-20 md:right-6 md:left-auto md:w-96 max-w-md mx-auto z-50 glass-modal rounded-3xl p-5 shadow-2xl border border-black/10 dark:border-white/10 animate-sheet-up md:animate-scale-in text-[#1D1D1F] dark:text-[#F5F5F7]">
+          {/* Mobile Handle */}
+          <div className="w-10 h-1 bg-black/15 dark:bg-white/20 rounded-full mx-auto mb-3 md:hidden" />
+
           {/* Header */}
           <div className="flex items-center justify-between pb-3 border-b border-black/5 dark:border-white/10">
             <div className="flex items-center space-x-2.5">
@@ -96,15 +113,16 @@ export const FloatingSupport: React.FC = () => {
         </div>
       )}
 
-      {/* Floating Pill Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center space-x-2 px-4 py-3 rounded-full btn-accent shadow-apple-card hover:shadow-apple-hover transition-all duration-300 group"
-      >
-        <MessageSquare className="w-4 h-4 transition-transform group-hover:scale-110" strokeWidth={1.5} />
-        <span className="text-xs font-semibold tracking-wide">Hỗ Trợ & Bảo Hành</span>
-      </button>
-    </div>
+      {/* Desktop Floating Pill Button (Hidden on Mobile) */}
+      <div className="hidden md:block fixed bottom-6 right-6 z-40">
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="flex items-center space-x-2 px-4 py-3 rounded-full btn-accent shadow-apple-card hover:shadow-apple-hover transition-all duration-300 group"
+        >
+          <MessageSquare className="w-4 h-4 transition-transform group-hover:scale-110" strokeWidth={1.5} />
+          <span className="text-xs font-semibold tracking-wide">Hỗ Trợ & Bảo Hành</span>
+        </button>
+      </div>
+    </>
   );
 };
-

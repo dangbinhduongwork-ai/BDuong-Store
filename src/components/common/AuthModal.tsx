@@ -190,19 +190,22 @@ export const AuthModal: React.FC<AuthModalProps> = ({ isOpen, onClose }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4">
       {/* Backdrop */}
       <div 
         className="fixed inset-0 bg-black/50 backdrop-blur-md transition-opacity duration-300"
         onClick={handleClose}
       />
 
-      {/* Modal Dialog */}
-      <div className="relative w-full max-w-md bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-7 shadow-2xl border border-black/5 dark:border-white/10 z-10 animate-scale-in text-[#1D1D1F] dark:text-[#F5F5F7] max-h-[90vh] overflow-y-auto">
+      {/* Modal Dialog / Bottom Sheet on Mobile */}
+      <div className="relative w-full max-w-md bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl rounded-t-[32px] sm:rounded-3xl p-5 sm:p-7 shadow-2xl border border-black/5 dark:border-white/10 z-10 animate-sheet-up sm:animate-scale-in text-[#1D1D1F] dark:text-[#F5F5F7] max-h-[90vh] overflow-y-auto">
+        {/* Mobile Drag Indicator Handle */}
+        <div className="w-12 h-1 bg-black/15 dark:bg-white/20 rounded-full mx-auto mb-3 sm:hidden" />
+
         {/* Close Button */}
         <button
           onClick={handleClose}
-          className="absolute top-5 right-5 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors"
+          className="absolute top-4 right-4 sm:top-5 sm:right-5 w-8 h-8 rounded-full bg-black/5 dark:bg-white/10 flex items-center justify-center text-gray-500 hover:text-black dark:text-gray-400 dark:hover:text-white transition-colors z-10"
         >
           <X className="w-4 h-4" strokeWidth={1.5} />
         </button>

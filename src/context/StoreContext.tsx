@@ -19,8 +19,8 @@ function formatAuthError(msg: string): string {
   if (lower.includes('email not confirmed')) {
     return 'Email chưa được kích hoạt. Vui lòng kiểm tra hộp thư đến (hoặc tắt Confirm Email trên Supabase)!';
   }
-  if (lower.includes('rate limit') || lower.includes('too many requests')) {
-    return 'Hệ thống đang bận do thao tác quá nhanh. Vui lòng chờ 1 phút rồi thử lại!';
+  if (lower.includes('rate limit') || lower.includes('too many requests') || lower.includes('over_email_send_rate_limit')) {
+    return 'Hệ thống giới hạn tạo tài khoản liên tiếp để chống spam. Vui lòng đăng nhập tài khoản đã tạo hoặc chờ ít phút!';
   }
   if (lower.includes('network') || lower.includes('fetch')) {
     return 'Lỗi kết nối mạng đến máy chủ Supabase. Vui lòng thử lại sau giây lát!';

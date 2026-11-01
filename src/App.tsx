@@ -39,7 +39,7 @@ const MainLayout: React.FC = () => {
   };
 
   return (
-    <div className="min-h-screen flex flex-col justify-between selection:bg-accent/20 selection:text-accent">
+    <div className="min-h-screen flex flex-col justify-between selection:bg-accent/20 selection:text-accent pb-20 md:pb-0">
       <div>
         {/* Top Announcement Bar */}
         <AnnouncementBar />

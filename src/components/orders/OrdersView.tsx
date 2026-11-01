@@ -76,15 +76,15 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onGoShopping }) => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 animate-fade-in">
+    <div className="max-w-4xl mx-auto px-3.5 sm:px-6 lg:px-8 py-6 sm:py-10 animate-fade-in">
       {/* Title Header */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-6 border-b border-black/5 dark:border-white/10 gap-4 mb-8">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-4 sm:pb-6 border-b border-black/5 dark:border-white/10 gap-3 sm:gap-4 mb-6 sm:mb-8">
         <div>
           <div className="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-accent-subtle text-accent text-xs font-semibold mb-2">
             <ShoppingBag className="w-3.5 h-3.5" strokeWidth={1.5} />
             <span>Lịch Sử Mua Hàng</span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
+          <h1 className="text-xl sm:text-3xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7]">
             Đơn Hàng Của Tôi
           </h1>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
@@ -94,7 +94,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onGoShopping }) => {
 
         <button
           onClick={onGoShopping}
-          className="px-4 py-2 rounded-xl btn-accent text-xs font-semibold flex items-center space-x-1.5 shadow-sm"
+          className="w-full sm:w-auto px-4 py-2 sm:py-2.5 rounded-xl btn-accent text-xs font-semibold flex items-center justify-center space-x-1.5 shadow-sm active:scale-95"
         >
           <span>Mua thêm sản phẩm</span>
           <ArrowRight className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -103,11 +103,11 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onGoShopping }) => {
 
       {/* Orders List */}
       {displayOrders.length === 0 ? (
-        <div className="text-center py-16 p-8 rounded-3xl glass-card border border-black/5 dark:border-white/10">
+        <div className="text-center py-12 sm:py-16 p-6 sm:p-8 rounded-2xl sm:rounded-3xl glass-card border border-black/5 dark:border-white/10">
           <div className="w-14 h-14 rounded-2xl bg-black/[0.03] dark:bg-white/[0.05] text-gray-400 mx-auto flex items-center justify-center mb-4">
             <ShoppingBag className="w-7 h-7" strokeWidth={1.5} />
           </div>
-          <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
+          <h3 className="text-base sm:text-lg font-semibold text-gray-800 dark:text-gray-200">
             Bạn chưa có đơn hàng nào
           </h3>
           <p className="text-xs text-gray-500 dark:text-gray-400 max-w-sm mx-auto mt-1 mb-6">
@@ -121,7 +121,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onGoShopping }) => {
           </button>
         </div>
       ) : (
-        <div className="space-y-5">
+        <div className="space-y-4 sm:space-y-5">
           {displayOrders.map((order) => {
             const isCompleted = order.status === 'completed';
             const isRevealed = revealedIds[order.id];
@@ -129,7 +129,7 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onGoShopping }) => {
             return (
               <div
                 key={order.id}
-                className="glass-card rounded-3xl p-5 sm:p-6 border border-black/5 dark:border-white/10 shadow-apple-sm transition-all hover:shadow-apple-card"
+                className="glass-card rounded-2xl sm:rounded-3xl p-4 sm:p-6 border border-black/5 dark:border-white/10 shadow-apple-sm transition-all hover:shadow-apple-card"
               >
                 {/* Order Top Bar */}
                 <div className="flex flex-wrap items-center justify-between gap-2 pb-4 border-b border-black/5 dark:border-white/5">

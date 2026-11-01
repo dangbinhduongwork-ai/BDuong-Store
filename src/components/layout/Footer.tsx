@@ -44,12 +44,12 @@ export const Footer: React.FC = () => {
         {/* Footer Details */}
         <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-center md:text-left">
           <p className="w-full md:w-auto leading-relaxed text-gray-500 dark:text-gray-400 break-words">
-            © {new Date().getFullYear()} <span className="font-semibold text-gray-800 dark:text-gray-200">{settings.store_name}</span>. Thiết kế theo phong cách Apple Human Interface Guidelines.
+            © {new Date().getFullYear()} <span className="font-semibold text-gray-800 dark:text-gray-200">{settings.store_name}</span>. Cung cấp tài khoản số & dịch vụ bản quyền uy tín, giao hàng tự động.
           </p>
           <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2 text-gray-500 dark:text-gray-400">
-            <span>Thanh toán VietQR 24/7</span>
+            <span>VietQR MBBank 24/7</span>
             <span className="hidden sm:inline">•</span>
-            <span>Hỗ trợ kỹ thuật Zalo / Telegram</span>
+            <span>Bảo hành 1 đổi 1</span>
             <span className="hidden sm:inline">•</span>
             <span className="flex items-center gap-1 text-accent font-medium">
               Made with <Heart className="w-3 h-3 fill-rose-500 text-rose-500" /> by BDuong

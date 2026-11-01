@@ -122,3 +122,26 @@ body {
 .btn-accent:active {
   transform: scale(0.98);
 }
+
+/* iOS Bottom Sheet & Safe Area Animations */
+@keyframes sheetUp {
+  from {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+.animate-sheet-up {
+  animation: sheetUp 0.32s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@supports (padding-bottom: env(safe-area-inset-bottom)) {
+  .pb-safe {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
+
