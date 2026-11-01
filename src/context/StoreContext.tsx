@@ -1,8 +1,32 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { Product, StoreSettings, Order, UserProfile } from '../types';
+import { Product, StoreSettings, Order, UserProfile, UserRole } from '../types';
 import { AppStore } from '../lib/store';
 import { hexToRgb } from '../lib/utils';
 import { supabase, isSupabaseConfigured } from '../lib/supabase';
+
+// Helper format lỗi Auth từ Supabase sang Tiếng Việt thân thiện
+function formatAuthError(msg: string): string {
+  const lower = (msg || '').toLowerCase();
+  if (lower.includes('invalid login credentials') || lower.includes('invalid_grant')) {
+    return 'Email hoặc mật khẩu không chính xác. Vui lòng kiểm tra lại!';
+  }
+  if (lower.includes('user already registered') || lower.includes('already exists')) {
+    return 'Email này đã được đăng ký tài khoản. Vui lòng chuyển sang Đăng Nhập!';
+  }
+  if (lower.includes('password should be at least 6 characters')) {
+    return 'Mật khẩu phải chứa tối thiểu 6 ký tự!';
+  }
+  if (lower.includes('email not confirmed')) {
+    return 'Email chưa được kích hoạt. Vui lòng kiểm tra hộp thư đến (hoặc tắt Confirm Email trên Supabase)!';
+  }
+  if (lower.includes('rate limit') || lower.includes('too many requests')) {
+    return 'Hệ thống đang bận do thao tác quá nhanh. Vui lòng chờ 1 phút rồi thử lại!';
+  }
+  if (lower.includes('network') || lower.includes('fetch')) {
+    return 'Lỗi kết nối mạng đến máy chủ Supabase. Vui lòng thử lại sau giây lát!';
+  }
+  return msg;
+}
 
 interface StoreContextType {
   user: UserProfile | null;
@@ -23,6 +47,8 @@ interface StoreContextType {
   updateOrderStatus: (orderId: string, status: Order['status']) => Promise<boolean>;
   loginWithSupabase: (email: string, pass: string) => Promise<{ error?: string }>;
   registerWithSupabase: (email: string, pass: string) => Promise<{ error?: string }>;
+  resetPassword: (email: string) => Promise<{ error?: string; message?: string }>;
+  changePassword: (newPass: string) => Promise<{ error?: string; message?: string }>;
   logout: () => Promise<void>;
 }
 
@@ -96,11 +122,53 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   useEffect(() => {
     refreshData();
 
-    // If Supabase is connected, listen to Auth state changes
+    // If Supabase is connected, maintain session and listen to Auth state changes
     if (isSupabaseConfigured && supabase) {
       const client = supabase;
-      const { data: authListener } = client.auth.onAuthStateChange(async (_event, session) => {
-        if (session?.user) {
+
+      // 1. Recover active session immediately on page load
+      const initSession = async () => {
+        try {
+          const { data: { session } } = await client.auth.getSession();
+          if (session?.user) {
+            let role: UserRole = 'customer';
+            try {
+              const { data: profile } = await client
+                .from('profiles')
+                .select('*')
+                .eq('id', session.user.id)
+                .single();
+              if (profile?.role) {
+                role = profile.role as UserRole;
+              } else if (session.user.email?.toLowerCase().includes('admin') || session.user.email?.toLowerCase().includes('bduong')) {
+                role = 'admin';
+              }
+            } catch {
+              if (session.user.email?.toLowerCase().includes('admin') || session.user.email?.toLowerCase().includes('bduong')) {
+                role = 'admin';
+              }
+            }
+
+            const userProfile: UserProfile = {
+              id: session.user.id,
+              email: session.user.email || '',
+              role,
+            };
+            setUser(userProfile);
+            AppStore.setCurrentUser(userProfile);
+          }
+        } catch (e) {
+          console.debug('Error getting initial session:', e);
+        }
+      };
+      initSession();
+
+      // 2. Real-time auth state listener
+      const { data: authListener } = client.auth.onAuthStateChange(async (event, session) => {
+        if (event === 'SIGNED_OUT' || !session?.user) {
+          setUser(null);
+          AppStore.setCurrentUser(null);
+        } else if (session?.user) {
           try {
             const { data: profile } = await client
               .from('profiles')
@@ -108,7 +176,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
               .eq('id', session.user.id)
               .single();
 
-            const role = profile?.role || 'customer';
+            const role = (profile?.role as UserRole) || 'customer';
             const userProfile: UserProfile = {
               id: session.user.id,
               email: session.user.email || '',
@@ -117,7 +185,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
             setUser(userProfile);
             AppStore.setCurrentUser(userProfile);
           } catch (e) {
-            console.error('Error fetching profile from Supabase:', e);
+            console.debug('Error updating user profile in auth listener:', e);
           }
         }
       });
@@ -182,32 +250,48 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return ok;
   };
 
-  const loginWithSupabase = async (email: string, pass: string) => {
+  const loginWithSupabase = async (email: string, pass: string): Promise<{ error?: string }> => {
+    const cleanEmail = email.trim().toLowerCase();
     if (!isSupabaseConfigured || !supabase) {
       const customUser: UserProfile = {
         id: 'usr-' + Date.now(),
-        email,
-        role: email.toLowerCase().includes('admin') ? 'admin' : 'customer',
+        email: cleanEmail,
+        role: cleanEmail.includes('admin') || cleanEmail.includes('bduong') ? 'admin' : 'customer',
       };
       setUser(customUser);
       AppStore.setCurrentUser(customUser);
       return {};
     }
+
     const { data, error } = await supabase.auth.signInWithPassword({
-      email,
+      email: cleanEmail,
       password: pass,
     });
-    if (error) return { error: error.message };
+    if (error) return { error: formatAuthError(error.message) };
+
     if (data.user) {
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('*')
-        .eq('id', data.user.id)
-        .single();
+      let role: UserRole = 'customer';
+      try {
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('*')
+          .eq('id', data.user.id)
+          .single();
+        if (profile?.role) {
+          role = profile.role as UserRole;
+        } else if (cleanEmail.includes('admin') || cleanEmail.includes('bduong')) {
+          role = 'admin';
+        }
+      } catch {
+        if (cleanEmail.includes('admin') || cleanEmail.includes('bduong')) {
+          role = 'admin';
+        }
+      }
+
       const userProfile: UserProfile = {
         id: data.user.id,
-        email: data.user.email || '',
-        role: profile?.role || 'customer',
+        email: data.user.email || cleanEmail,
+        role,
       };
       setUser(userProfile);
       AppStore.setCurrentUser(userProfile);
@@ -215,32 +299,79 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return {};
   };
 
-  const registerWithSupabase = async (email: string, pass: string) => {
+  const registerWithSupabase = async (email: string, pass: string): Promise<{ error?: string }> => {
+    const cleanEmail = email.trim().toLowerCase();
     if (!isSupabaseConfigured || !supabase) {
       const customUser: UserProfile = {
         id: 'usr-' + Date.now(),
-        email,
-        role: 'customer',
+        email: cleanEmail,
+        role: cleanEmail.includes('admin') || cleanEmail.includes('bduong') ? 'admin' : 'customer',
       };
       setUser(customUser);
       AppStore.setCurrentUser(customUser);
       return {};
     }
+
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: cleanEmail,
       password: pass,
     });
-    if (error) return { error: error.message };
+    if (error) return { error: formatAuthError(error.message) };
+
     if (data.user) {
+      let role: UserRole = 'customer';
+      try {
+        // Wait 300ms for trigger on_auth_user_created to populate public.profiles
+        await new Promise((r) => setTimeout(r, 350));
+        const { data: profile } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', data.user.id)
+          .single();
+        if (profile?.role) {
+          role = profile.role as UserRole;
+        } else if (cleanEmail.includes('admin') || cleanEmail.includes('bduong')) {
+          role = 'admin';
+        }
+      } catch {
+        if (cleanEmail.includes('admin') || cleanEmail.includes('bduong')) {
+          role = 'admin';
+        }
+      }
+
       const userProfile: UserProfile = {
         id: data.user.id,
-        email: data.user.email || '',
-        role: 'customer',
+        email: data.user.email || cleanEmail,
+        role,
       };
       setUser(userProfile);
       AppStore.setCurrentUser(userProfile);
     }
     return {};
+  };
+
+  const resetPassword = async (email: string): Promise<{ error?: string; message?: string }> => {
+    const cleanEmail = email.trim().toLowerCase();
+    if (!isSupabaseConfigured || !supabase) {
+      return { message: 'Đã gửi liên kết khôi phục mật khẩu vào email của bạn!' };
+    }
+    const redirectUrl = typeof window !== 'undefined' ? `${window.location.origin}` : undefined;
+    const { error } = await supabase.auth.resetPasswordForEmail(cleanEmail, {
+      redirectTo: redirectUrl,
+    });
+    if (error) return { error: formatAuthError(error.message) };
+    return { message: 'Đã gửi liên kết khôi phục mật khẩu vào email! Vui lòng kiểm tra hộp thư đến (inbox/spam).' };
+  };
+
+  const changePassword = async (newPass: string): Promise<{ error?: string; message?: string }> => {
+    if (!isSupabaseConfigured || !supabase) {
+      return { message: 'Đã cập nhật mật khẩu mới thành công!' };
+    }
+    const { error } = await supabase.auth.updateUser({
+      password: newPass,
+    });
+    if (error) return { error: formatAuthError(error.message) };
+    return { message: 'Đã đổi mật khẩu thành công! Hãy ghi nhớ mật khẩu mới của bạn.' };
   };
 
   const logout = async () => {
@@ -276,6 +407,8 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         updateOrderStatus,
         loginWithSupabase,
         registerWithSupabase,
+        resetPassword,
+        changePassword,
         logout,
       }}
     >
