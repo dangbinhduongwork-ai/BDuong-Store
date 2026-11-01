@@ -43,6 +43,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAutoChecking, setIsAutoChecking] = useState(false);
   const [checkCount, setCheckCount] = useState(0);
+  const [paymentError, setPaymentError] = useState<string | null>(null);
   const [deliveredCredential, setDeliveredCredential] = useState<string | null>(null);
   const [timeLeft, setTimeLeft] = useState(900); // 15 mins countdown
   const isDeliveredRef = useRef(false);
@@ -55,6 +56,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setOrderCode(code);
       setBuyerEmail(initialEmail);
       setDeliveredCredential(null);
+      setPaymentError(null);
       setIsProcessing(false);
       setIsAutoChecking(true);
       setCheckCount(0);
@@ -92,24 +94,26 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       setCheckCount((prev) => prev + 1);
 
       // 1. Check if SePay API Token is provided
-      const sepayToken = settings.sepay_api_token || import.meta.env.VITE_SEPAY_API_TOKEN;
-      if (sepayToken) {
-        try {
-          const res = await verifyPaymentWithSepay(sepayToken, orderCode, product.price);
-          if (res.paid && !isDeliveredRef.current) {
-            isDeliveredRef.current = true;
-            setIsProcessing(true);
-            const delivery = await deliverOrder(orderCode);
-            setIsProcessing(false);
-            if (delivery.success && delivery.credential) {
-              setDeliveredCredential(delivery.credential);
-              triggerConfetti();
-            }
-            return;
+      const sepayToken = 
+        settings.sepay_api_token || 
+        import.meta.env.VITE_SEPAY_API_TOKEN || 
+        'NWWB8YFASXJODRPTTLPCDJYEIA95VZCFSPZYXSKGB1UOORHLEZMGBGXJ9WD3AZQ2';
+
+      try {
+        const res = await verifyPaymentWithSepay(sepayToken, orderCode, product.price);
+        if (res.paid && !isDeliveredRef.current) {
+          isDeliveredRef.current = true;
+          setIsProcessing(true);
+          const delivery = await deliverOrder(orderCode);
+          setIsProcessing(false);
+          if (delivery.success && delivery.credential) {
+            setDeliveredCredential(delivery.credential);
+            triggerConfetti();
           }
-        } catch (e) {
-          console.debug('Error in auto payment check loop:', e);
+          return;
         }
+      } catch (e) {
+        console.debug('Error in auto payment check loop:', e);
       }
 
       // 2. Also check if order was completed via Webhook in Supabase / Local storage
@@ -124,7 +128,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       } catch (e) {
         console.debug('Error checking order status:', e);
       }
-    }, 3500);
+    }, 2500);
 
     return () => clearInterval(interval);
   }, [isOpen, product, orderCode, deliveredCredential, settings.sepay_api_token]);
@@ -169,17 +173,41 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
 
   const handleManualConfirm = async () => {
     setIsProcessing(true);
-    setTimeout(async () => {
-      isDeliveredRef.current = true;
-      const res = await deliverOrder(orderCode);
-      setIsProcessing(false);
-      if (res.success && res.credential) {
-        setDeliveredCredential(res.credential);
-        triggerConfetti();
-      } else {
-        setDeliveredCredential('Đơn hàng đã được xác nhận. Vui lòng liên hệ Admin để nhận thông tin!');
+    setPaymentError(null);
+
+    const sepayToken = 
+      settings.sepay_api_token || 
+      import.meta.env.VITE_SEPAY_API_TOKEN || 
+      'NWWB8YFASXJODRPTTLPCDJYEIA95VZCFSPZYXSKGB1UOORHLEZMGBGXJ9WD3AZQ2';
+
+    try {
+      // 🔒 ĐỐI SOÁT SEPAY THẬT - BẢO MẬT TUYỆT ĐỐI KHÔNG GIAO BỪA KHI CHƯA NHẬN ĐƯỢC TIỀN
+      const res = await verifyPaymentWithSepay(sepayToken, orderCode, product.price);
+      if (res.paid) {
+        isDeliveredRef.current = true;
+        const delivery = await deliverOrder(orderCode);
+        setIsProcessing(false);
+        if (delivery.success && delivery.credential) {
+          setDeliveredCredential(delivery.credential);
+          triggerConfetti();
+        } else {
+          setDeliveredCredential(delivery.message || 'Đơn hàng đã được xác nhận thành công!');
+          triggerConfetti();
+        }
+        return;
       }
-    }, 1200);
+
+      // NẾU CHƯA NHẬN ĐƯỢC TIỀN TỪ MBBANK: BÁO LỖI VÀ CHẶN LẠI!
+      setIsProcessing(false);
+      setPaymentError(
+        `Hệ thống MBBank chưa nhận được biến động số dư cho mã đơn "${orderCode}" (${formatVND(product.price)}). Vui lòng đảm bảo bạn đã chuyển khoản đúng số tiền và nội dung, hoặc đợi 10-20 giây để ngân hàng gửi sao kê!`
+      );
+    } catch {
+      setIsProcessing(false);
+      setPaymentError(
+        'Đang đối soát giao dịch với SePay. Nếu bạn đã chuyển khoản thành công, hệ thống sẽ tự động mở khóa sau vài giây!'
+      );
+    }
   };
 
   const formatTimer = (seconds: number) => {
@@ -374,6 +402,14 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
               </span>
             </div>
 
+            {/* Payment Check Error Notification */}
+            {paymentError && (
+              <div className="mb-4 p-3.5 rounded-2xl bg-red-500/10 border border-red-500/20 text-red-600 dark:text-red-400 text-xs flex items-start space-x-2 animate-shake">
+                <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                <span className="leading-relaxed">{paymentError}</span>
+              </div>
+            )}
+
             {/* Action Buttons */}
             <div className="space-y-2">
               <button
@@ -384,15 +420,18 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 {isProcessing ? (
                   <>
                     <span className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                    <span>Đang kiểm tra giao dịch MBBank...</span>
+                    <span>Đang đối soát biến động số dư MBBank...</span>
                   </>
                 ) : (
                   <>
                     <CheckCircle2 className="w-4 h-4" strokeWidth={1.5} />
-                    <span>Tôi Đã Chuyển Khoản (Kích Hoạt Tức Thì)</span>
+                    <span>Tôi Đã Chuyển Khoản (Kiểm Tra Giao Dịch MBBank)</span>
                   </>
                 )}
               </button>
+              <p className="text-[11px] text-gray-400 text-center">
+                🔒 Hệ thống đối soát trực tiếp sao kê MBBank 2222226062005. Đơn hàng chỉ được giao khi ngân hàng ghi nhận đúng số tiền.
+              </p>
             </div>
           </div>
         ) : (
