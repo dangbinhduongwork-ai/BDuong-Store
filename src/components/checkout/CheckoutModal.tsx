@@ -73,6 +73,17 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
         amount: product.price,
         status: 'pending',
       });
+
+      // Save order code to browser history so guest or user can track
+      try {
+        const localCodes: string[] = JSON.parse(localStorage.getItem('bduong_my_order_codes') || '[]');
+        if (!localCodes.includes(code)) {
+          localCodes.unshift(code);
+          localStorage.setItem('bduong_my_order_codes', JSON.stringify(localCodes.slice(0, 30)));
+        }
+      } catch {
+        // ignore
+      }
     }
   }, [isOpen, product]);
 

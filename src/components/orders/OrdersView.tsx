@@ -26,12 +26,29 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onGoShopping }) => {
   const [copiedId, setCopiedId] = useState<string | null>(null);
   const [revealedIds, setRevealedIds] = useState<Record<string, boolean>>({});
 
-  // Filter orders: If logged in, show user orders or all if demo
-  const displayOrders = user?.role === 'admin'
-    ? orders
-    : user
-    ? orders.filter((o) => !o.user_id || o.user_id === user.id || o.customer_email === user.email)
-    : orders;
+  // Filter orders: Strictly show ONLY the orders belonging to the current user (or browser session for guest)
+  const displayOrders = React.useMemo(() => {
+    if (user) {
+      const userEmail = (user.email || '').toLowerCase().trim();
+      return orders.filter((o) => {
+        const matchesUserId = Boolean(o.user_id && o.user_id === user.id);
+        const matchesEmail = Boolean(o.customer_email && o.customer_email.toLowerCase().trim() === userEmail);
+        return matchesUserId || matchesEmail;
+      });
+    }
+
+    // For guest visitors: only show orders they purchased in this browser session
+    try {
+      const localCodes: string[] = JSON.parse(localStorage.getItem('bduong_my_order_codes') || '[]');
+      if (localCodes.length > 0) {
+        return orders.filter((o) => localCodes.includes(o.order_code));
+      }
+    } catch {
+      // fallback
+    }
+
+    return [];
+  }, [orders, user]);
 
   const copyCredential = (text: string, id: string) => {
     navigator.clipboard.writeText(text);

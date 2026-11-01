@@ -21,8 +21,27 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
   const { user, settings, isDarkMode, toggleDarkMode, orders, logout } = useStore();
   const [isAuthOpen, setIsAuthOpen] = useState(false);
 
-  // Orders count for badge
-  const completedOrdersCount = orders.filter(o => o.status === 'completed').length;
+  // Orders count for badge (ONLY completed orders belonging to this user)
+  const myCompletedOrdersCount = React.useMemo(() => {
+    if (user) {
+      const userEmail = (user.email || '').toLowerCase().trim();
+      return orders.filter(
+        (o) =>
+          o.status === 'completed' &&
+          ((o.user_id && o.user_id === user.id) ||
+            (o.customer_email && o.customer_email.toLowerCase().trim() === userEmail))
+      ).length;
+    }
+    try {
+      const localCodes: string[] = JSON.parse(localStorage.getItem('bduong_my_order_codes') || '[]');
+      if (localCodes.length > 0) {
+        return orders.filter((o) => o.status === 'completed' && localCodes.includes(o.order_code)).length;
+      }
+    } catch {
+      // fallback
+    }
+    return 0;
+  }, [orders, user]);
 
   return (
     <>
@@ -66,14 +85,14 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
             >
               <ShoppingBag className="w-3.5 h-3.5" strokeWidth={1.5} />
               <span>Đơn Hàng</span>
-              {completedOrdersCount > 0 && (
+              {myCompletedOrdersCount > 0 && (
                 <span 
                   className={`w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold shadow-sm ${
                     currentView === 'orders' ? 'bg-white text-accent' : 'text-white'
                   }`}
                   style={currentView === 'orders' ? {} : { backgroundColor: 'var(--accent-color, #0071E3)' }}
                 >
-                  {completedOrdersCount}
+                  {myCompletedOrdersCount}
                 </span>
               )}
             </button>
@@ -161,9 +180,9 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
             }`}
           >
             <span>Đơn Hàng</span>
-            {completedOrdersCount > 0 && (
-              <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center">
-                {completedOrdersCount}
+            {myCompletedOrdersCount > 0 && (
+              <span className="w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center font-bold">
+                {myCompletedOrdersCount}
               </span>
             )}
           </button>

@@ -104,7 +104,16 @@ export class AppStore {
     const local = localStorage.getItem(PRODUCTS_KEY);
     if (local) {
       try {
-        return JSON.parse(local);
+        const parsed = JSON.parse(local);
+        const cleaned = parsed.filter((p: Product) => 
+          p.name !== 'test' && 
+          p.name !== 'sáda' && 
+          !p.name.toLowerCase().includes('test')
+        );
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem(PRODUCTS_KEY, JSON.stringify(cleaned));
+        }
+        return cleaned;
       } catch {
         // fallback
       }
@@ -228,7 +237,18 @@ export class AppStore {
     const local = localStorage.getItem(ORDERS_KEY);
     if (local) {
       try {
-        return JSON.parse(local);
+        const parsed = JSON.parse(local);
+        // Purge legacy test/sample orders
+        const cleaned = parsed.filter((o: Order) => 
+          !o.order_code?.startsWith('BDUONG982') && 
+          !o.delivered_credential?.includes('sample') &&
+          !o.product_name?.toLowerCase().includes('test') &&
+          !o.product_name?.toLowerCase().includes('s%da')
+        );
+        if (cleaned.length !== parsed.length) {
+          localStorage.setItem(ORDERS_KEY, JSON.stringify(cleaned));
+        }
+        return cleaned;
       } catch {
         // fallback
       }

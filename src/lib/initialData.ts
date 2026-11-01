@@ -148,30 +148,5 @@ export const DEMO_CUSTOMER: UserProfile = {
   created_at: new Date().toISOString(),
 };
 
-export const INITIAL_ORDERS: Order[] = [
-  {
-    id: 'ord-1001',
-    order_code: 'BDUONG9821',
-    user_id: 'usr-customer-demo',
-    customer_email: 'khachhang@gmail.com',
-    product_id: 'prod-ytb-1m',
-    product_name: 'YouTube Premium (Chính Chủ)',
-    amount: 29000,
-    status: 'completed',
-    delivered_credential: 'Tài khoản Google Family Invite Link: https://youtube.com/invite/family-bduong-sample-active (Nhấp vào link để vào nhóm gia đình)',
-    created_at: new Date(Date.now() - 3600000 * 24 * 2).toISOString(),
-  },
-  {
-    id: 'ord-1002',
-    order_code: 'BDUONG9822',
-    user_id: 'usr-customer-demo',
-    customer_email: 'khachhang@gmail.com',
-    product_id: 'prod-gemini-pro',
-    product_name: 'Google Gemini Advanced / Pro',
-    amount: 79000,
-    status: 'completed',
-    delivered_credential: 'Email: gemini.vip.user0@gmail.com | Pass: BDuongStore@2026! | 2FA: JBSWY3DPEHPK3PXP (Đăng nhập tại gemini.google.com)',
-    created_at: new Date(Date.now() - 3600000 * 12).toISOString(),
-  },
-];
+export const INITIAL_ORDERS: Order[] = [];
 
