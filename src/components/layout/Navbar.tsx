@@ -6,7 +6,8 @@ import {
   User, 
   Layers, 
   CheckCircle2,
-  LogOut
+  LogOut,
+  ShoppingBag
 } from 'lucide-react';
 import { useStore } from '../../context/StoreContext';
 import { AuthModal } from '../common/AuthModal';
@@ -51,59 +52,52 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
             </div>
           </div>
 
-          {/* Navigation Links (Desktop) */}
-          <div className="hidden md:flex items-center space-x-1 p-1 bg-black/[0.03] dark:bg-white/[0.05] rounded-full border border-black/5 dark:border-white/5">
-            <button
-              onClick={() => setCurrentView('home')}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all ${
-                currentView === 'home'
-                  ? 'bg-white dark:bg-[#2C2C2E] text-black dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'
-              }`}
-            >
-              Cửa Hàng
-            </button>
-
+          {/* Right Controls - Grouped right next to Account */}
+          <div className="flex items-center space-x-1.5 sm:space-x-2">
+            {/* Orders Button - Next to Account */}
             <button
               onClick={() => setCurrentView('orders')}
-              className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center space-x-1.5 ${
+              className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center space-x-1.5 border ${
                 currentView === 'orders'
-                  ? 'bg-white dark:bg-[#2C2C2E] text-black dark:text-white shadow-sm'
-                  : 'text-gray-600 dark:text-gray-400 hover:text-black dark:hover:text-white'
+                  ? 'bg-accent text-white border-accent shadow-sm'
+                  : 'border-black/5 dark:border-white/10 bg-black/[0.03] dark:bg-white/[0.06] text-gray-700 dark:text-gray-300 hover:text-black dark:hover:text-white hover:bg-black/5'
               }`}
+              title="Đơn Hàng Của Tôi"
             >
-              <span>Đơn Hàng Của Tôi</span>
+              <ShoppingBag className="w-3.5 h-3.5" strokeWidth={1.5} />
+              <span>Đơn Hàng</span>
               {completedOrdersCount > 0 && (
                 <span 
-                  className="w-4 h-4 rounded-full text-white text-[10px] flex items-center justify-center font-bold shadow-sm"
-                  style={{ backgroundColor: 'var(--accent-color, #0071E3)' }}
+                  className={`w-4 h-4 rounded-full text-[10px] flex items-center justify-center font-bold shadow-sm ${
+                    currentView === 'orders' ? 'bg-white text-accent' : 'text-white'
+                  }`}
+                  style={currentView === 'orders' ? {} : { backgroundColor: 'var(--accent-color, #0071E3)' }}
                 >
                   {completedOrdersCount}
                 </span>
               )}
             </button>
 
+            {/* Minimized Admin Dashboard Button (Only visible to admin) */}
             {user?.role === 'admin' && (
               <button
                 onClick={() => setCurrentView('admin')}
-                className={`px-4 py-1.5 rounded-full text-xs font-medium transition-all flex items-center space-x-1 ${
+                className={`px-2.5 sm:px-3 py-1.5 rounded-full text-xs font-semibold transition-all flex items-center space-x-1 border ${
                   currentView === 'admin'
-                    ? 'bg-white dark:bg-[#2C2C2E] text-accent shadow-sm'
-                    : 'text-accent hover:opacity-80'
+                    ? 'bg-accent text-white border-accent shadow-sm'
+                    : 'border-accent/30 bg-accent-subtle text-accent hover:bg-accent/20'
                 }`}
+                title="Trang Quản Trị Hệ Thống"
               >
-                <Shield className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>Trang Quản Trị</span>
+                <Shield className="w-3.5 h-3.5" strokeWidth={1.8} />
+                <span className="hidden sm:inline">Quản Trị</span>
               </button>
             )}
-          </div>
 
-          {/* Right Controls */}
-          <div className="flex items-center space-x-2 sm:space-x-3">
             {/* Theme Toggle Button */}
             <button
               onClick={toggleDarkMode}
-              className="w-9 h-9 rounded-full bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] flex items-center justify-center text-gray-700 dark:text-gray-200 transition-colors"
+              className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] flex items-center justify-center text-gray-700 dark:text-gray-200 transition-colors"
               title={isDarkMode ? 'Chuyển sang Chế độ Sáng' : 'Chuyển sang Chế độ Tối'}
             >
               {isDarkMode ? (
@@ -151,19 +145,19 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
         </div>
 
         {/* Mobile Navigation Bar */}
-        <div className="flex md:hidden items-center justify-around py-2 border-t border-black/5 dark:border-white/5 px-2 bg-white/50 dark:bg-black/50">
+        <div className="flex md:hidden items-center justify-around py-2 border-t border-black/5 dark:border-white/5 px-2 bg-white/70 dark:bg-black/70 backdrop-blur-md">
           <button
             onClick={() => setCurrentView('home')}
-            className={`text-xs font-medium py-1 px-3 rounded-full ${
-              currentView === 'home' ? 'bg-accent text-white' : 'text-gray-500'
+            className={`text-xs font-medium py-1.5 px-3 rounded-full transition-all ${
+              currentView === 'home' ? 'bg-accent text-white font-semibold' : 'text-gray-500'
             }`}
           >
             Cửa Hàng
           </button>
           <button
             onClick={() => setCurrentView('orders')}
-            className={`text-xs font-medium py-1 px-3 rounded-full flex items-center space-x-1 ${
-              currentView === 'orders' ? 'bg-accent text-white' : 'text-gray-500'
+            className={`text-xs font-medium py-1.5 px-3 rounded-full flex items-center space-x-1 transition-all ${
+              currentView === 'orders' ? 'bg-accent text-white font-semibold' : 'text-gray-500'
             }`}
           >
             <span>Đơn Hàng</span>
@@ -176,11 +170,12 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
           {user?.role === 'admin' && (
             <button
               onClick={() => setCurrentView('admin')}
-              className={`text-xs font-medium py-1 px-3 rounded-full ${
-                currentView === 'admin' ? 'bg-accent text-white' : 'text-accent'
+              className={`text-xs font-medium py-1.5 px-3 rounded-full flex items-center space-x-1 transition-all ${
+                currentView === 'admin' ? 'bg-accent text-white font-semibold' : 'text-accent'
               }`}
             >
-              👑 Quản Trị
+              <Shield className="w-3 h-3" />
+              <span>Quản Trị</span>
             </button>
           )}
         </div>

@@ -82,6 +82,13 @@ export class AppStore {
   static async getProducts(): Promise<Product[]> {
     if (this.isRealBackend() && supabase) {
       try {
+        // Try calling the secure RPC first (masks stock credentials for non-admins)
+        const { data: safeData, error: rpcError } = await supabase.rpc('get_products_safe');
+        if (safeData && !rpcError && Array.isArray(safeData) && safeData.length > 0) {
+          localStorage.setItem(PRODUCTS_KEY, JSON.stringify(safeData));
+          return safeData as Product[];
+        }
+
         const { data, error } = await supabase
           .from('products')
           .select('*')

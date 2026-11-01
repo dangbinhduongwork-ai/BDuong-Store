@@ -51,9 +51,10 @@ export const OrdersView: React.FC<OrdersViewProps> = ({ onGoShopping }) => {
 - Ngày mua: ${formatDate(order.created_at)}
 - Mô tả sự cố: `
     );
+    const fallbackPhone = (settings.support_phone || '0865.087.784').replace(/\D/g, '');
     const url = settings.support_zalo 
       ? `${settings.support_zalo}?text=${text}`
-      : `https://zalo.me/${settings.bank_account}?text=${text}`;
+      : `https://zalo.me/${fallbackPhone}?text=${text}`;
     window.open(url, '_blank');
   };
 

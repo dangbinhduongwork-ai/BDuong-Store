@@ -42,7 +42,7 @@ export const ProductGrid: React.FC<ProductGridProps> = ({
             Sản Phẩm Số & Tài Khoản AI
           </h2>
           <p className="text-xs sm:text-sm text-gray-500 dark:text-gray-400 mt-1">
-            Giao hàng tức thì qua VietQR tự động • Cam kết bảo hành 1 đổi 1 trọn gói.
+            Giao hàng tự động qua VietQR • Bảo hành 1 đổi 1 trọn thời gian.
           </p>
         </div>
       </div>

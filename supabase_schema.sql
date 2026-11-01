@@ -77,17 +77,32 @@ ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO anon, authen
 ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON ROUTINES TO anon, authenticated, service_role;
 
 -- ==============================================================================
--- 6. ROW LEVEL SECURITY (RLS) - BẢO MẬT & MỞ CHO GIAO DỊCH TRƠN TRU
+-- ==============================================================================
+-- 6. HÀM BẢO MẬT & ROW LEVEL SECURITY (RLS) CHUẨN DOANH NGHIỆP
 -- ==============================================================================
 ALTER TABLE public.profiles ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.store_settings ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.products ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.orders ENABLE ROW LEVEL SECURITY;
 
+-- Helper Function: Kiểm tra người dùng hiện tại có phải Admin không
+CREATE OR REPLACE FUNCTION public.is_admin()
+RETURNS BOOLEAN AS $$
+BEGIN
+  RETURN EXISTS (
+    SELECT 1 FROM public.profiles 
+    WHERE id = auth.uid() AND role = 'admin'
+  );
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
 -- Dọn dẹp policy cũ
 DROP POLICY IF EXISTS "Public profiles are viewable by everyone" ON public.profiles;
 DROP POLICY IF EXISTS "Users can update own profile" ON public.profiles;
 DROP POLICY IF EXISTS "Allow public all profiles" ON public.profiles;
+DROP POLICY IF EXISTS "Profiles select policy" ON public.profiles;
+DROP POLICY IF EXISTS "Profiles update policy" ON public.profiles;
+DROP POLICY IF EXISTS "Profiles delete policy" ON public.profiles;
 
 DROP POLICY IF EXISTS "Store settings are viewable by everyone" ON public.store_settings;
 DROP POLICY IF EXISTS "Only admin can update store settings" ON public.store_settings;
@@ -106,22 +121,55 @@ DROP POLICY IF EXISTS "Users can create orders" ON public.orders;
 DROP POLICY IF EXISTS "Admin or system can update orders" ON public.orders;
 DROP POLICY IF EXISTS "Allow public all orders" ON public.orders;
 
--- Tạo chính sách mới:
--- Profiles: Mọi người đọc được, người dùng cập nhật profile của mình
-CREATE POLICY "Allow public all profiles" ON public.profiles FOR ALL USING (true) WITH CHECK (true);
+-- 1. Profiles: Đọc công khai, cập nhật profile chính chủ hoặc Admin
+CREATE POLICY "Profiles select policy" ON public.profiles FOR SELECT USING (true);
+CREATE POLICY "Profiles insert policy" ON public.profiles FOR INSERT WITH CHECK (auth.uid() = id OR public.is_admin() OR (SELECT count(*) FROM public.profiles) = 0);
+CREATE POLICY "Profiles update policy" ON public.profiles FOR UPDATE USING (auth.uid() = id OR public.is_admin() OR (SELECT count(*) FROM public.profiles) = 0);
+CREATE POLICY "Profiles delete policy" ON public.profiles FOR DELETE USING (public.is_admin() OR (SELECT count(*) FROM public.profiles) = 0);
 
--- Store Settings: Mọi người đọc, cập nhật thông suốt
-CREATE POLICY "Allow public read settings" ON public.store_settings FOR SELECT USING (true);
-CREATE POLICY "Allow public update settings" ON public.store_settings FOR ALL USING (true) WITH CHECK (true);
+-- 2. Store Settings: Mọi người xem, chỉ Admin mới được thay đổi tài khoản ngân hàng / SePay Token
+CREATE POLICY "Store settings select policy" ON public.store_settings FOR SELECT USING (true);
+CREATE POLICY "Store settings update policy" ON public.store_settings FOR ALL USING (public.is_admin() OR (SELECT count(*) FROM public.profiles WHERE role = 'admin') = 0);
 
--- Products: Đọc công khai, thêm/sửa/xóa mở cho người quản trị
-CREATE POLICY "Allow public read products" ON public.products FOR SELECT USING (true);
-CREATE POLICY "Allow public insert products" ON public.products FOR INSERT WITH CHECK (true);
-CREATE POLICY "Allow public update products" ON public.products FOR UPDATE USING (true) WITH CHECK (true);
-CREATE POLICY "Allow public delete products" ON public.products FOR DELETE USING (true);
+-- 3. Products: Đọc công khai, chỉ Admin mới được thêm/sửa/xóa sản phẩm
+CREATE POLICY "Products select policy" ON public.products FOR SELECT USING (true);
+CREATE POLICY "Products insert policy" ON public.products FOR INSERT WITH CHECK (public.is_admin() OR (SELECT count(*) FROM public.profiles WHERE role = 'admin') = 0);
+CREATE POLICY "Products update policy" ON public.products FOR UPDATE USING (public.is_admin() OR (SELECT count(*) FROM public.profiles WHERE role = 'admin') = 0);
+CREATE POLICY "Products delete policy" ON public.products FOR DELETE USING (public.is_admin() OR (SELECT count(*) FROM public.profiles WHERE role = 'admin') = 0);
 
--- Orders: Khách vãng lai và thành viên đều có thể tạo đơn, xem đơn và hệ thống cập nhật khi thanh toán
-CREATE POLICY "Allow public all orders" ON public.orders FOR ALL USING (true) WITH CHECK (true);
+-- 4. Orders: Mọi người có thể tạo đơn và tra cứu đơn hàng của mình
+CREATE POLICY "Orders all policy" ON public.orders FOR ALL USING (true) WITH CHECK (true);
+
+-- 5. Hàm lấy danh sách sản phẩm an toàn chống lộ kho hàng (Stock Data Masking)
+CREATE OR REPLACE FUNCTION public.get_products_safe()
+RETURNS SETOF public.products AS $$
+BEGIN
+  IF public.is_admin() THEN
+    -- Admin: Xem đầy đủ toàn bộ tài khoản trong kho
+    RETURN QUERY SELECT * FROM public.products ORDER BY created_at DESC;
+  ELSE
+    -- Khách hàng: Giữ nguyên số lượng slot để đếm (stockCount), nhưng che giấu nội dung nhạy cảm
+    RETURN QUERY 
+      SELECT 
+        id, 
+        name, 
+        category, 
+        price, 
+        duration, 
+        description, 
+        warranty_policy, 
+        icon_name, 
+        ARRAY(SELECT 'PROTECTED_CREDENTIAL' FROM unnest(stock_data))::text[] as stock_data, 
+        is_active, 
+        created_at 
+      FROM public.products 
+      ORDER BY created_at DESC;
+  END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+GRANT EXECUTE ON FUNCTION public.get_products_safe() TO anon, authenticated, service_role;
+GRANT EXECUTE ON FUNCTION public.is_admin() TO anon, authenticated, service_role;
 
 -- ==============================================================================
 -- 7. KÍCH HOẠT SUPABASE REALTIME (Tự động cập nhật tức thì trên trình duyệt)

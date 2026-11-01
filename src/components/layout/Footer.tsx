@@ -15,8 +15,8 @@ export const Footer: React.FC = () => {
               <Zap className="w-5 h-5" strokeWidth={1.5} />
             </div>
             <div>
-              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Giao Hàng Tự Động 10 Giây</h5>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Hệ thống xử lý thanh toán VietQR và trả tài khoản ngay lập tức</p>
+              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Giao Hàng Tự Động</h5>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Nhận tài khoản ngay sau khi chuyển khoản VietQR</p>
             </div>
           </div>
 
@@ -25,8 +25,8 @@ export const Footer: React.FC = () => {
               <ShieldCheck className="w-5 h-5" strokeWidth={1.5} />
             </div>
             <div>
-              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Bảo Hành 1 Đổi 1 Trọn Thời Gian</h5>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Cam kết hoàn tiền hoặc đổi tài khoản mới nếu xảy ra bất kỳ sự cố nào</p>
+              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Bảo Hành 1 Đổi 1</h5>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Hỗ trợ kỹ thuật và đổi mới suốt thời gian sử dụng</p>
             </div>
           </div>
 
@@ -35,8 +35,8 @@ export const Footer: React.FC = () => {
               <Lock className="w-5 h-5" strokeWidth={1.5} />
             </div>
             <div>
-              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Bảo Mật & An Toàn Tuyệt Đối</h5>
-              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Không giữ mật khẩu cá nhân, mã hóa dữ liệu đơn hàng của khách hàng</p>
+              <h5 className="font-semibold text-gray-900 dark:text-gray-100 text-sm">Bảo Mật & Tin Cậy</h5>
+              <p className="text-[11px] text-gray-500 dark:text-gray-400 mt-0.5">Mã hóa dữ liệu đơn hàng và đối soát an toàn</p>
             </div>
           </div>
         </div>
