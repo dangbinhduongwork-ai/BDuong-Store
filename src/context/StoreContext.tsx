@@ -49,6 +49,10 @@ interface StoreContextType {
   registerWithSupabase: (email: string, pass: string) => Promise<{ error?: string }>;
   resetPassword: (email: string) => Promise<{ error?: string; message?: string }>;
   changePassword: (newPass: string) => Promise<{ error?: string; message?: string }>;
+  users: UserProfile[];
+  fetchUsers: () => Promise<UserProfile[]>;
+  updateUserRole: (userId: string, role: UserRole) => Promise<boolean>;
+  deleteUser: (userId: string) => Promise<boolean>;
   logout: () => Promise<void>;
 }
 
@@ -71,6 +75,7 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   });
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
+  const [users, setUsers] = useState<UserProfile[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [isDarkMode, setIsDarkMode] = useState<boolean>(false);
 
@@ -374,6 +379,39 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     return { message: 'Đã đổi mật khẩu thành công! Hãy ghi nhớ mật khẩu mới của bạn.' };
   };
 
+  const fetchUsers = async (): Promise<UserProfile[]> => {
+    try {
+      const fetched = await AppStore.getUsers();
+      setUsers(fetched);
+      return fetched;
+    } catch (e) {
+      console.error('Error fetching users:', e);
+      return [];
+    }
+  };
+
+  const updateUserRole = async (userId: string, role: UserRole): Promise<boolean> => {
+    const success = await AppStore.updateUserRole(userId, role);
+    if (success) {
+      await fetchUsers();
+      // If updating current user role
+      if (user && user.id === userId) {
+        const updated = { ...user, role };
+        setUser(updated);
+        AppStore.setCurrentUser(updated);
+      }
+    }
+    return success;
+  };
+
+  const deleteUser = async (userId: string): Promise<boolean> => {
+    const success = await AppStore.deleteUser(userId);
+    if (success) {
+      await fetchUsers();
+    }
+    return success;
+  };
+
   const logout = async () => {
     if (isSupabaseConfigured && supabase) {
       try {
@@ -409,6 +447,10 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
         registerWithSupabase,
         resetPassword,
         changePassword,
+        users,
+        fetchUsers,
+        updateUserRole,
+        deleteUser,
         logout,
       }}
     >

@@ -6,6 +6,7 @@ import { ProductManager } from './ProductManager';
 import { StockManager } from './StockManager';
 import { OrderManager } from './OrderManager';
 import { StoreSettingsManager } from './StoreSettingsManager';
+import { UserManager } from './UserManager';
 import { 
   Package, 
   Layers, 
@@ -15,17 +16,18 @@ import {
   CheckCircle2, 
   Clock, 
   ShieldCheck, 
-  ArrowLeft 
+  ArrowLeft,
+  Users
 } from 'lucide-react';
 
 interface AdminDashboardProps {
   onBackToHome: () => void;
 }
 
-type AdminTab = 'products' | 'stock' | 'orders' | 'settings';
+type AdminTab = 'products' | 'stock' | 'orders' | 'users' | 'settings';
 
 export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToHome }) => {
-  const { products, orders } = useStore();
+  const { products, orders, users } = useStore();
   const [activeTab, setActiveTab] = useState<AdminTab>('products');
 
   // Stats
@@ -38,6 +40,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToHome }) 
     { id: 'products', label: 'Quản Lý Sản Phẩm', icon: <Package className="w-4 h-4" strokeWidth={1.5} />, badge: products.length },
     { id: 'stock', label: 'Quản Lý Kho Hàng', icon: <Layers className="w-4 h-4" strokeWidth={1.5} />, badge: totalStockItems },
     { id: 'orders', label: 'Quản Lý Đơn Hàng', icon: <ShoppingBag className="w-4 h-4" strokeWidth={1.5} />, badge: pendingOrders.length > 0 ? pendingOrders.length : undefined },
+    { id: 'users', label: 'Quản Lý Người Dùng', icon: <Users className="w-4 h-4" strokeWidth={1.5} />, badge: users.length > 0 ? users.length : undefined },
     { id: 'settings', label: 'Cài Đặt Cửa Hàng & Theme', icon: <Settings className="w-4 h-4" strokeWidth={1.5} /> },
   ];
 
@@ -160,6 +163,7 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToHome }) 
         {activeTab === 'products' && <ProductManager />}
         {activeTab === 'stock' && <StockManager />}
         {activeTab === 'orders' && <OrderManager />}
+        {activeTab === 'users' && <UserManager />}
         {activeTab === 'settings' && <StoreSettingsManager />}
       </div>
     </div>

@@ -17,7 +17,9 @@ import {
   ExternalLink,
   QrCode,
   Radio,
-  Sparkles
+  Sparkles,
+  Download,
+  Mail
 } from 'lucide-react';
 
 interface CheckoutModalProps {
@@ -36,6 +38,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   const { settings, user, createOrder, deliverOrder } = useStore();
 
   const [orderCode, setOrderCode] = useState('');
+  const [buyerEmail, setBuyerEmail] = useState('');
   const [copiedField, setCopiedField] = useState<string | null>(null);
   const [isProcessing, setIsProcessing] = useState(false);
   const [isAutoChecking, setIsAutoChecking] = useState(false);
@@ -48,7 +51,9 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
   useEffect(() => {
     if (isOpen && product) {
       const code = generateOrderCode();
+      const initialEmail = user?.email || '';
       setOrderCode(code);
+      setBuyerEmail(initialEmail);
       setDeliveredCredential(null);
       setIsProcessing(false);
       setIsAutoChecking(true);
@@ -60,7 +65,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       createOrder({
         order_code: code,
         user_id: user?.id,
-        customer_email: user?.email || 'guest@bduongstore.com',
+        customer_email: initialEmail || 'guest@bduongstore.com',
         product_id: product.id,
         product_name: product.name,
         amount: product.price,
@@ -204,7 +209,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
       />
 
       {/* Modal Dialog */}
-      <div className="relative w-full max-w-xl bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-black/5 dark:border-white/10 z-10 animate-scale-in text-[#1D1D1F] dark:text-[#F5F5F7] max-h-[92vh] overflow-y-auto">
+      <div className="relative w-full max-w-2xl sm:max-w-3xl bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl rounded-3xl p-6 sm:p-8 shadow-2xl border border-black/5 dark:border-white/10 z-10 animate-scale-in text-[#1D1D1F] dark:text-[#F5F5F7] max-h-[92vh] overflow-y-auto">
         {/* Close Button */}
         <button
           onClick={onClose}
@@ -220,10 +225,10 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             <div className="text-center mb-6">
               <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-accent-subtle text-accent text-xs font-semibold mb-2">
                 <QrCode className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>Thanh Toán VietQR & Xác Nhận Tự Động</span>
+                <span>Thanh Toán VietQR & Giao Hàng Tự Động</span>
               </span>
               <h3 className="text-xl sm:text-2xl font-bold tracking-tight">
-                Quét Mã QR Để Nhận Tài Khoản
+                Quét Mã QR Nhận Tài Khoản Tức Thì
               </h3>
               <div className="flex items-center justify-center space-x-2 text-xs text-gray-500 dark:text-gray-400 mt-1">
                 <Clock className="w-3.5 h-3.5" strokeWidth={1.5} />
@@ -240,7 +245,7 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                 </div>
                 <div>
                   <p className="font-semibold text-emerald-800 dark:text-emerald-300 text-xs">
-                    Cổng tự động quét biến động số dư MBBank
+                    Cổng tự động quét biến động số dư MBBank 24/7
                   </p>
                   <p className="text-[11px] text-emerald-600 dark:text-emerald-400">
                     Hệ thống tự động kích hoạt tài khoản ngay khi ngân hàng nhận tiền.
@@ -254,25 +259,39 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
             </div>
 
             {/* QR Code and Bank Details */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 items-center mb-6">
-              {/* Left: VietQR Image Container */}
-              <div className="flex flex-col items-center justify-center p-4 rounded-2xl bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 shadow-sm">
-                <div className="relative w-48 h-48 bg-white rounded-xl p-1 shadow-inner flex items-center justify-center overflow-hidden">
+            <div className="grid grid-cols-1 md:grid-cols-12 gap-6 items-center mb-6">
+              {/* Left: Extra Large VietQR Image Container (col-span-6) */}
+              <div className="md:col-span-6 flex flex-col items-center justify-center p-4 sm:p-5 rounded-3xl bg-white dark:bg-black/50 border border-black/10 dark:border-white/10 shadow-apple-card">
+                <div className="relative w-64 h-64 sm:w-72 sm:h-72 bg-white rounded-2xl p-2 shadow-inner flex items-center justify-center overflow-hidden border border-black/5">
                   <img
                     src={qrUrl}
                     alt={`VietQR ${orderCode}`}
-                    className="w-full h-full object-contain"
+                    className="w-full h-full object-contain select-none"
                     loading="eager"
                   />
                 </div>
+
+                <div className="mt-3 flex items-center justify-center space-x-2 w-full">
+                  <a
+                    href={qrUrl}
+                    download={`VietQR-${orderCode}.png`}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/10 hover:bg-black/10 text-gray-700 dark:text-gray-300 text-[11px] font-semibold flex items-center space-x-1.5 transition-colors"
+                  >
+                    <Download className="w-3.5 h-3.5" />
+                    <span>Lưu ảnh QR về máy</span>
+                  </a>
+                </div>
+
                 <p className="text-[11px] text-gray-400 mt-2 text-center flex items-center justify-center gap-1">
-                  <Zap className="w-3 h-3 text-accent" strokeWidth={1.5} />
-                  Mở App ngân hàng bất kỳ quét mã
+                  <Zap className="w-3.5 h-3.5 text-accent" strokeWidth={1.5} />
+                  Mở App ngân hàng bất kỳ quét mã chuẩn VietQR
                 </p>
               </div>
 
-              {/* Right: Transfer details */}
-              <div className="space-y-3 text-xs">
+              {/* Right: Transfer details (col-span-6) */}
+              <div className="md:col-span-6 space-y-2.5 text-xs">
                 {/* Bank Name */}
                 <div className="p-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] border border-black/5 dark:border-white/5">
                   <span className="text-[10px] text-gray-400 uppercase font-medium block">Ngân hàng thụ hưởng</span>
@@ -328,6 +347,21 @@ export const CheckoutModal: React.FC<CheckoutModalProps> = ({
                   >
                     {copiedField === 'code' ? <Check className="w-3.5 h-3.5" /> : <Copy className="w-3.5 h-3.5" />}
                   </button>
+                </div>
+
+                {/* Buyer Email Input (Optional for Warranty) */}
+                <div className="p-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.05] border border-black/5 dark:border-white/5">
+                  <span className="text-[10px] text-gray-400 uppercase font-medium flex items-center gap-1">
+                    <Mail className="w-3 h-3 text-accent" />
+                    <span>Email nhận thông tin bảo hành</span>
+                  </span>
+                  <input
+                    type="email"
+                    value={buyerEmail}
+                    onChange={(e) => setBuyerEmail(e.target.value)}
+                    placeholder="email.cua.ban@gmail.com"
+                    className="w-full mt-1 px-2.5 py-1.5 rounded-lg bg-white dark:bg-black/40 border border-black/10 dark:border-white/10 text-xs focus:outline-none focus:ring-1 focus:ring-accent font-medium"
+                  />
                 </div>
               </div>
             </div>

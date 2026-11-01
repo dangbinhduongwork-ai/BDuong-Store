@@ -370,4 +370,64 @@ export class AppStore {
       localStorage.removeItem(USER_KEY);
     }
   }
+
+  // --- USERS MANAGEMENT (ADMIN) ---
+  static async getUsers(): Promise<UserProfile[]> {
+    if (this.isRealBackend() && supabase) {
+      try {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('*')
+          .order('created_at', { ascending: false });
+        if (data && !error) {
+          return data as UserProfile[];
+        }
+      } catch (e) {
+        console.warn('Failed to fetch users from Supabase:', e);
+      }
+    }
+
+    const current = this.getCurrentUser();
+    return current ? [current] : [];
+  }
+
+  static async updateUserRole(userId: string, role: 'customer' | 'admin'): Promise<boolean> {
+    if (this.isRealBackend() && supabase) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .update({ role })
+          .eq('id', userId);
+        if (error) {
+          console.error('Error updating user role in Supabase:', error);
+          return false;
+        }
+        return true;
+      } catch (e) {
+        console.error('Exception updating user role:', e);
+        return false;
+      }
+    }
+    return true;
+  }
+
+  static async deleteUser(userId: string): Promise<boolean> {
+    if (this.isRealBackend() && supabase) {
+      try {
+        const { error } = await supabase
+          .from('profiles')
+          .delete()
+          .eq('id', userId);
+        if (error) {
+          console.error('Error deleting user profile:', error);
+          return false;
+        }
+        return true;
+      } catch (e) {
+        console.error('Exception deleting user profile:', e);
+        return false;
+      }
+    }
+    return true;
+  }
 }
