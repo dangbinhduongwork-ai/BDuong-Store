@@ -17,6 +17,7 @@ export interface StoreSettings {
   bank_id: string;
   bank_account: string;
   bank_owner: string;
+  support_phone?: string;
   support_zalo: string;
   support_telegram: string;
   announcement: string;

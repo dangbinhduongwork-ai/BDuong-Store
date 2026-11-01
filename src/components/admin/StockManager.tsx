@@ -59,6 +59,7 @@ export const StockManager: React.FC = () => {
             <button
               key={p.id}
               onClick={() => setSelectedProductId(p.id)}
+              style={isSelected ? { backgroundColor: 'var(--accent-color, #0071E3)', color: '#ffffff', borderColor: 'var(--accent-color, #0071E3)' } : {}}
               className={`flex items-center space-x-2 px-3.5 py-2.5 rounded-2xl text-xs font-semibold whitespace-nowrap transition-all border ${
                 isSelected
                   ? 'border-accent bg-accent text-white shadow-sm'
@@ -66,11 +67,11 @@ export const StockManager: React.FC = () => {
               }`}
             >
               <DynamicIcon name={p.icon_name} size={16} strokeWidth={1.5} />
-              <span>{p.name}</span>
+              <span className={isSelected ? 'text-white font-bold' : ''}>{p.name}</span>
               <span
-                className={`text-[10px] px-2 py-0.5 rounded-full ${
+                className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                   isSelected
-                    ? 'bg-white/20 text-white'
+                    ? 'bg-white/25 text-white'
                     : count > 0
                     ? 'bg-emerald-500/10 text-emerald-600 dark:text-emerald-400'
                     : 'bg-red-500/10 text-red-500'

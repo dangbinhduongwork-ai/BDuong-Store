@@ -84,10 +84,13 @@ export const FloatingSupport: React.FC = () => {
 
             <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.04] text-[11px] text-gray-500 dark:text-gray-400 flex items-center justify-between">
               <span className="flex items-center space-x-2">
-                <PhoneCall className="w-3.5 h-3.5" strokeWidth={1.5} />
-                <span>Hotline/Zalo: <strong>{settings.bank_account || '2222226062005'}</strong></span>
+                <PhoneCall className="w-3.5 h-3.5 text-accent" strokeWidth={1.5} />
+                <span>Hotline / Zalo: <strong className="text-gray-900 dark:text-gray-100 font-semibold">{settings.support_phone || '0865.087.784'}</strong></span>
               </span>
-              <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span className="inline-flex items-center gap-1.5 text-[10px] text-emerald-600 dark:text-emerald-400 font-medium">
+                <span className="inline-block w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                <span>Trực tuyến</span>
+              </span>
             </div>
           </div>
         </div>

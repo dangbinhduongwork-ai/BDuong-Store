@@ -75,6 +75,7 @@ export const OrderManager: React.FC = () => {
       <div className="flex items-center space-x-2 overflow-x-auto pb-1 text-xs">
         <button
           onClick={() => setStatusFilter('all')}
+          style={statusFilter === 'all' ? { backgroundColor: 'var(--accent-color, #0071E3)', color: '#fff' } : {}}
           className={`px-3 py-1.5 rounded-xl font-medium transition-colors ${
             statusFilter === 'all'
               ? 'bg-accent text-white shadow-sm'

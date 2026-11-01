@@ -42,17 +42,17 @@ export const Footer: React.FC = () => {
         </div>
 
         {/* Footer Details */}
-        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px]">
-          <p>
-            © {new Date().getFullYear()} {settings.store_name}. Thiết kế theo phong cách Apple Human Interface Guidelines.
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-[11px] text-center md:text-left">
+          <p className="w-full md:w-auto leading-relaxed text-gray-500 dark:text-gray-400 break-words">
+            © {new Date().getFullYear()} <span className="font-semibold text-gray-800 dark:text-gray-200">{settings.store_name}</span>. Thiết kế theo phong cách Apple Human Interface Guidelines.
           </p>
-          <div className="flex items-center space-x-4">
+          <div className="flex flex-wrap items-center justify-center md:justify-end gap-x-4 gap-y-2 text-gray-500 dark:text-gray-400">
             <span>Thanh toán VietQR 24/7</span>
-            <span>•</span>
+            <span className="hidden sm:inline">•</span>
             <span>Hỗ trợ kỹ thuật Zalo / Telegram</span>
-            <span>•</span>
-            <span className="flex items-center gap-1 text-accent">
-              Made with <Heart className="w-3 h-3 fill-current" /> by BDuong
+            <span className="hidden sm:inline">•</span>
+            <span className="flex items-center gap-1 text-accent font-medium">
+              Made with <Heart className="w-3 h-3 fill-rose-500 text-rose-500" /> by BDuong
             </span>
           </div>
         </div>

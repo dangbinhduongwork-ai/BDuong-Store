@@ -371,14 +371,25 @@ export const StoreSettingsManager: React.FC = () => {
               <span>Kênh Hỗ Trợ Khách Hàng (Support Center)</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <div>
+                <label className="block text-gray-500 mb-1 font-medium">Hotline / Zalo (Số điện thoại)</label>
+                <input
+                  type="text"
+                  value={formData.support_phone || ''}
+                  onChange={(e) => setFormData({ ...formData, support_phone: e.target.value })}
+                  placeholder="0865.087.784"
+                  className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+
               <div>
                 <label className="block text-gray-500 mb-1 font-medium">Link Zalo Hỗ Trợ</label>
                 <input
                   type="text"
                   value={formData.support_zalo}
                   onChange={(e) => setFormData({ ...formData, support_zalo: e.target.value })}
-                  placeholder="https://zalo.me/2222226062005"
+                  placeholder="https://zalo.me/0865087784"
                   className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs focus:outline-none focus:ring-2 focus:ring-accent"
                 />
               </div>

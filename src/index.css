@@ -88,8 +88,28 @@ body {
 }
 
 /* Dynamic Accent Utilities */
+.bg-accent {
+  background-color: var(--accent-color, #0071E3) !important;
+}
+
+.text-accent {
+  color: var(--accent-color, #0071E3) !important;
+}
+
+.border-accent {
+  border-color: var(--accent-color, #0071E3) !important;
+}
+
+.ring-accent {
+  --tw-ring-color: var(--accent-color, #0071E3) !important;
+}
+
+.bg-accent-subtle {
+  background-color: rgba(var(--accent-rgb, 0, 113, 227), 0.1) !important;
+}
+
 .btn-accent {
-  background-color: var(--accent-color);
+  background-color: var(--accent-color, #0071E3);
   color: #ffffff;
   transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
 }
@@ -101,20 +121,4 @@ body {
 
 .btn-accent:active {
   transform: scale(0.98);
-}
-
-.text-accent {
-  color: var(--accent-color);
-}
-
-.bg-accent-subtle {
-  background-color: rgba(var(--accent-rgb), 0.1);
-}
-
-.border-accent {
-  border-color: var(--accent-color);
-}
-
-.ring-accent {
-  --tw-ring-color: var(--accent-color);
 }

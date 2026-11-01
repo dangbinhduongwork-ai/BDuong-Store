@@ -20,7 +20,8 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
     bank_id TEXT NOT NULL DEFAULT 'MBBank',
     bank_account TEXT NOT NULL DEFAULT '2222226062005',
     bank_owner TEXT NOT NULL DEFAULT 'DANG BINH DUONG',
-    support_zalo TEXT DEFAULT 'https://zalo.me/2222226062005',
+    support_phone TEXT DEFAULT '0865.087.784',
+    support_zalo TEXT DEFAULT 'https://zalo.me/0865087784',
     support_telegram TEXT DEFAULT 'https://t.me/bduongstore',
     announcement TEXT DEFAULT '🔥 Chào mừng đến với BDuong Store - Cam kết bảo hành 1 đổi 1 suốt thời gian sử dụng!',
     sepay_api_token TEXT DEFAULT 'NWWB8YFASXJODRPTTLPCDJYEIA95VZCFSPZYXSKGB1UOORHLEZMGBGXJ9WD3AZQ2',
@@ -215,8 +216,10 @@ CREATE TRIGGER on_auth_user_created
 -- ==============================================================================
 
 -- 1. Cài đặt cửa hàng
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS support_phone TEXT DEFAULT '0865.087.784';
+
 INSERT INTO public.store_settings (
-    id, store_name, theme_mode, accent_color, bank_id, bank_account, bank_owner, support_zalo, support_telegram, announcement, sepay_api_token, auto_check_payment
+    id, store_name, theme_mode, accent_color, bank_id, bank_account, bank_owner, support_phone, support_zalo, support_telegram, announcement, sepay_api_token, auto_check_payment
 )
 VALUES (
     1,
@@ -226,7 +229,8 @@ VALUES (
     'MBBank',
     '2222226062005',
     'DANG BINH DUONG',
-    'https://zalo.me/2222226062005',
+    '0865.087.784',
+    'https://zalo.me/0865087784',
     'https://t.me/bduongstore',
     '🔥 Chào mừng đến với BDuong Store - Cam kết bảo hành 1 đổi 1 suốt thời gian sử dụng!',
     'NWWB8YFASXJODRPTTLPCDJYEIA95VZCFSPZYXSKGB1UOORHLEZMGBGXJ9WD3AZQ2',
@@ -236,7 +240,8 @@ ON CONFLICT (id) DO UPDATE SET
     bank_id = 'MBBank',
     bank_account = '2222226062005',
     bank_owner = 'DANG BINH DUONG',
-    support_zalo = 'https://zalo.me/2222226062005',
+    support_phone = '0865.087.784',
+    support_zalo = 'https://zalo.me/0865087784',
     sepay_api_token = 'NWWB8YFASXJODRPTTLPCDJYEIA95VZCFSPZYXSKGB1UOORHLEZMGBGXJ9WD3AZQ2',
     auto_check_payment = true;
 

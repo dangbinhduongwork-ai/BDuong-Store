@@ -144,9 +144,10 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToHome }) 
               <span>{tab.label}</span>
               {tab.badge !== undefined && (
                 <span
+                  style={isActive ? { backgroundColor: 'var(--accent-color, #0071E3)', color: '#fff' } : {}}
                   className={`text-[10px] px-2 py-0.5 rounded-full font-bold ${
                     isActive
-                      ? 'bg-accent text-white'
+                      ? 'bg-accent text-white shadow-sm'
                       : 'bg-black/10 dark:bg-white/10 text-gray-600 dark:text-gray-300'
                   }`}
                 >

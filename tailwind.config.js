@@ -19,6 +19,12 @@ export default {
         ],
       },
       colors: {
+        accent: {
+          DEFAULT: 'rgb(var(--accent-rgb, 0, 113, 227) / <alpha-value>)',
+          hover: 'var(--accent-hover, #0077ED)',
+          subtle: 'rgba(var(--accent-rgb, 0, 113, 227), 0.1)',
+        },
+        'accent-subtle': 'rgba(var(--accent-rgb, 0, 113, 227), 0.1)',
         apple: {
           lightBg: '#F5F5F7',
           cardLight: 'rgba(255, 255, 255, 0.85)',

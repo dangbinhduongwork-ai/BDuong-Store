@@ -32,7 +32,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
             onClick={() => setCurrentView('home')}
             className="flex items-center space-x-3 cursor-pointer group select-none"
           >
-            <div className="w-9 h-9 rounded-2xl bg-accent text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200">
+            <div 
+              className="w-9 h-9 rounded-2xl text-white flex items-center justify-center shadow-sm group-hover:scale-105 transition-transform duration-200"
+              style={{ backgroundColor: 'var(--accent-color, #0071E3)' }}
+            >
               <Layers className="w-5 h-5" strokeWidth={1.5} />
             </div>
             <div>
@@ -71,7 +74,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
             >
               <span>Đơn Hàng Của Tôi</span>
               {completedOrdersCount > 0 && (
-                <span className="w-4 h-4 rounded-full bg-accent text-white text-[10px] flex items-center justify-center font-bold">
+                <span 
+                  className="w-4 h-4 rounded-full text-white text-[10px] flex items-center justify-center font-bold shadow-sm"
+                  style={{ backgroundColor: 'var(--accent-color, #0071E3)' }}
+                >
                   {completedOrdersCount}
                 </span>
               )}
@@ -114,7 +120,10 @@ export const Navbar: React.FC<NavbarProps> = ({ currentView, setCurrentView }) =
                   onClick={() => setIsAuthOpen(true)}
                   className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-accent-subtle text-accent hover:bg-accent/20 transition-all text-xs font-semibold"
                 >
-                  <div className="w-5 h-5 rounded-full bg-accent text-white flex items-center justify-center text-[10px] font-bold">
+                  <div 
+                    className="w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] font-bold"
+                    style={{ backgroundColor: 'var(--accent-color, #0071E3)' }}
+                  >
                     {user.email.charAt(0).toUpperCase()}
                   </div>
                   <span className="max-w-[120px] truncate hidden sm:inline">
