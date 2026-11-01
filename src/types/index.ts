@@ -23,6 +23,22 @@ export interface StoreSettings {
   announcement: string;
   sepay_api_token?: string;
   auto_check_payment?: boolean;
+
+  // Hero Section Customization
+  hero_badge?: string;
+  hero_title?: string;
+  hero_highlight?: string;
+  hero_description?: string;
+  hero_cta_primary?: string;
+  hero_cta_secondary?: string;
+  hero_chip1_title?: string;
+  hero_chip1_sub?: string;
+  hero_chip2_title?: string;
+  hero_chip2_sub?: string;
+  hero_chip3_title?: string;
+  hero_chip3_sub?: string;
+  hero_chip4_title?: string;
+  hero_chip4_sub?: string;
 }
 
 export interface Product {

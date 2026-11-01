@@ -26,6 +26,20 @@ CREATE TABLE IF NOT EXISTS public.store_settings (
     announcement TEXT DEFAULT '🔥 Chào mừng đến với BDuong Store - Cam kết bảo hành 1 đổi 1 suốt thời gian sử dụng!',
     sepay_api_token TEXT DEFAULT 'NWWB8YFASXJODRPTTLPCDJYEIA95VZCFSPZYXSKGB1UOORHLEZMGBGXJ9WD3AZQ2',
     auto_check_payment BOOLEAN DEFAULT true,
+    hero_badge TEXT DEFAULT 'Bản Quyền Số • Kích Hoạt Tự Động',
+    hero_title TEXT DEFAULT 'Tài khoản số chính hãng.',
+    hero_highlight TEXT DEFAULT 'Giao ngay tức thì trong 10 giây.',
+    hero_description TEXT DEFAULT 'Giải trí YouTube Premium, AI Gemini / Muse Pro và khóa học chuyên sâu với chính sách Bảo hành 1 đổi 1 trọn thời gian.',
+    hero_cta_primary TEXT DEFAULT 'Khám Phá Sản Phẩm',
+    hero_cta_secondary TEXT DEFAULT 'Tư Vấn Zalo',
+    hero_chip1_title TEXT DEFAULT 'Giao Tự Động',
+    hero_chip1_sub TEXT DEFAULT 'Trả tài khoản 24/7',
+    hero_chip2_title TEXT DEFAULT 'Bảo Hành 1 Đổi 1',
+    hero_chip2_sub TEXT DEFAULT 'Trọn thời gian gói',
+    hero_chip3_title TEXT DEFAULT 'VietQR MBBank',
+    hero_chip3_sub TEXT DEFAULT 'Khớp lệnh tự động',
+    hero_chip4_title TEXT DEFAULT 'Hỗ Trợ 24/7',
+    hero_chip4_sub TEXT DEFAULT 'Zalo & Telegram',
     updated_at TIMESTAMPTZ DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
 
@@ -265,6 +279,20 @@ CREATE TRIGGER on_auth_user_created
 
 -- 1. Cài đặt cửa hàng
 ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS support_phone TEXT DEFAULT '0865.087.784';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_badge TEXT DEFAULT 'Bản Quyền Số • Kích Hoạt Tự Động';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_title TEXT DEFAULT 'Tài khoản số chính hãng.';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_highlight TEXT DEFAULT 'Giao ngay tức thì trong 10 giây.';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_description TEXT DEFAULT 'Giải trí YouTube Premium, AI Gemini / Muse Pro và khóa học chuyên sâu với chính sách Bảo hành 1 đổi 1 trọn thời gian.';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_cta_primary TEXT DEFAULT 'Khám Phá Sản Phẩm';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_cta_secondary TEXT DEFAULT 'Tư Vấn Zalo';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_chip1_title TEXT DEFAULT 'Giao Tự Động';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_chip1_sub TEXT DEFAULT 'Trả tài khoản 24/7';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_chip2_title TEXT DEFAULT 'Bảo Hành 1 Đổi 1';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_chip2_sub TEXT DEFAULT 'Trọn thời gian gói';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_chip3_title TEXT DEFAULT 'VietQR MBBank';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_chip3_sub TEXT DEFAULT 'Khớp lệnh tự động';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_chip4_title TEXT DEFAULT 'Hỗ Trợ 24/7';
+ALTER TABLE public.store_settings ADD COLUMN IF NOT EXISTS hero_chip4_sub TEXT DEFAULT 'Zalo & Telegram';
 
 INSERT INTO public.store_settings (
     id, store_name, theme_mode, accent_color, bank_id, bank_account, bank_owner, support_phone, support_zalo, support_telegram, announcement, sepay_api_token, auto_check_payment

@@ -65,10 +65,32 @@ export class AppStore {
 
     if (this.isRealBackend() && supabase) {
       try {
-        await supabase
+        // Try saving full payload (including hero fields)
+        const { error } = await supabase
           .from('store_settings')
           .update(updated)
           .eq('id', updated.id || 1);
+
+        if (error && error.message?.includes('Could not find')) {
+          // If custom hero columns haven't been migrated yet in Supabase, update base columns
+          const baseColumns = {
+            store_name: updated.store_name,
+            theme_mode: updated.theme_mode,
+            accent_color: updated.accent_color,
+            bank_id: updated.bank_id,
+            bank_account: updated.bank_account,
+            bank_owner: updated.bank_owner,
+            support_zalo: updated.support_zalo,
+            support_telegram: updated.support_telegram,
+            announcement: updated.announcement,
+            sepay_api_token: updated.sepay_api_token,
+            auto_check_payment: updated.auto_check_payment,
+          };
+          await supabase
+            .from('store_settings')
+            .update(baseColumns)
+            .eq('id', updated.id || 1);
+        }
       } catch (e) {
         console.warn('Failed to update settings in Supabase:', e);
       }

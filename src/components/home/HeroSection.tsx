@@ -21,21 +21,21 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick }) => {
         {/* Apple Pill Badge */}
         <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-black/[0.04] dark:bg-white/[0.08] border border-black/5 dark:border-white/10 text-xs font-medium text-gray-700 dark:text-gray-300 mb-6 shadow-apple-sm">
           <Sparkles className="w-3.5 h-3.5 text-accent" strokeWidth={1.5} />
-          <span>Bản Quyền Số • Kích Hoạt Tự Động</span>
+          <span>{settings.hero_badge || 'Bản Quyền Số • Kích Hoạt Tự Động'}</span>
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
         </div>
 
         {/* Headline */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-bold tracking-tight text-[#1D1D1F] dark:text-[#F5F5F7] leading-[1.1] mb-6">
-          Tài khoản số chính hãng.{' '}
+          {settings.hero_title || 'Tài khoản số chính hãng.'}{' '}
           <span className="block text-accent font-extrabold mt-1">
-            Giao ngay tức thì trong 10 giây.
+            {settings.hero_highlight || 'Giao ngay tức thì trong 10 giây.'}
           </span>
         </h1>
 
         {/* Subtitle */}
         <p className="max-w-2xl mx-auto text-base sm:text-lg text-gray-600 dark:text-gray-400 font-normal leading-relaxed mb-8">
-          Giải trí YouTube Premium, AI Gemini / Muse Pro và khóa học chuyên sâu với chính sách <strong className="text-gray-900 dark:text-gray-100 font-semibold">Bảo hành 1 đổi 1 trọn thời gian</strong>.
+          {settings.hero_description || 'Giải trí YouTube Premium, AI Gemini / Muse Pro và khóa học chuyên sâu với chính sách Bảo hành 1 đổi 1 trọn thời gian.'}
         </p>
 
         {/* CTA Buttons */}
@@ -44,7 +44,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick }) => {
             onClick={onExploreClick}
             className="px-7 py-3.5 rounded-full btn-accent font-semibold text-sm shadow-apple-card hover:shadow-apple-hover flex items-center space-x-2 group"
           >
-            <span>Khám Phá Sản Phẩm</span>
+            <span>{settings.hero_cta_primary || 'Khám Phá Sản Phẩm'}</span>
             <ArrowDown className="w-4 h-4 transition-transform group-hover:translate-y-0.5" strokeWidth={1.5} />
           </button>
           
@@ -54,7 +54,7 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick }) => {
             rel="noopener noreferrer"
             className="px-6 py-3.5 rounded-full bg-black/[0.04] dark:bg-white/[0.08] hover:bg-black/[0.08] dark:hover:bg-white/[0.12] text-gray-800 dark:text-gray-200 font-medium text-sm transition-all border border-black/5 dark:border-white/5"
           >
-            Tư Vấn Zalo
+            {settings.hero_cta_secondary || 'Tư Vấn Zalo'}
           </a>
         </div>
 
@@ -65,8 +65,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick }) => {
               <Zap className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <div className="text-left min-w-0">
-              <p className="font-semibold text-xs text-gray-900 dark:text-white truncate">Giao Tự Động</p>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400">Trả tài khoản 24/7</p>
+              <p className="font-semibold text-xs text-gray-900 dark:text-white truncate">
+                {settings.hero_chip1_title || 'Giao Tự Động'}
+              </p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                {settings.hero_chip1_sub || 'Trả tài khoản 24/7'}
+              </p>
             </div>
           </div>
 
@@ -75,8 +79,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick }) => {
               <Shield className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <div className="text-left min-w-0">
-              <p className="font-semibold text-xs text-gray-900 dark:text-white truncate">Bảo Hành 1 Đổi 1</p>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400">Trọn thời gian gói</p>
+              <p className="font-semibold text-xs text-gray-900 dark:text-white truncate">
+                {settings.hero_chip2_title || 'Bảo Hành 1 Đổi 1'}
+              </p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                {settings.hero_chip2_sub || 'Trọn thời gian gói'}
+              </p>
             </div>
           </div>
 
@@ -85,8 +93,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick }) => {
               <CheckCircle className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <div className="text-left min-w-0">
-              <p className="font-semibold text-xs text-gray-900 dark:text-white truncate">VietQR MBBank</p>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400">Khớp lệnh tự động</p>
+              <p className="font-semibold text-xs text-gray-900 dark:text-white truncate">
+                {settings.hero_chip3_title || 'VietQR MBBank'}
+              </p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                {settings.hero_chip3_sub || 'Khớp lệnh tự động'}
+              </p>
             </div>
           </div>
 
@@ -95,8 +107,12 @@ export const HeroSection: React.FC<HeroSectionProps> = ({ onExploreClick }) => {
               <Sparkles className="w-4 h-4" strokeWidth={1.5} />
             </div>
             <div className="text-left min-w-0">
-              <p className="font-semibold text-xs text-gray-900 dark:text-white truncate">Hỗ Trợ 24/7</p>
-              <p className="text-[10px] text-gray-500 dark:text-gray-400">Zalo & Telegram</p>
+              <p className="font-semibold text-xs text-gray-900 dark:text-white truncate">
+                {settings.hero_chip4_title || 'Hỗ Trợ 24/7'}
+              </p>
+              <p className="text-[10px] text-gray-500 dark:text-gray-400">
+                {settings.hero_chip4_sub || 'Zalo & Telegram'}
+              </p>
             </div>
           </div>
         </div>

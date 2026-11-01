@@ -73,6 +73,20 @@ export const StoreProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     announcement: '🔥 Chào mừng đến với BDuong Store - Cam kết bảo hành 1 đổi 1 suốt thời gian sử dụng!',
     sepay_api_token: import.meta.env.VITE_SEPAY_API_TOKEN || '',
     auto_check_payment: true,
+    hero_badge: 'Bản Quyền Số • Kích Hoạt Tự Động',
+    hero_title: 'Tài khoản số chính hãng.',
+    hero_highlight: 'Giao ngay tức thì trong 10 giây.',
+    hero_description: 'Giải trí YouTube Premium, AI Gemini / Muse Pro và khóa học chuyên sâu với chính sách Bảo hành 1 đổi 1 trọn thời gian.',
+    hero_cta_primary: 'Khám Phá Sản Phẩm',
+    hero_cta_secondary: 'Tư Vấn Zalo',
+    hero_chip1_title: 'Giao Tự Động',
+    hero_chip1_sub: 'Trả tài khoản 24/7',
+    hero_chip2_title: 'Bảo Hành 1 Đổi 1',
+    hero_chip2_sub: 'Trọn thời gian gói',
+    hero_chip3_title: 'VietQR MBBank',
+    hero_chip3_sub: 'Khớp lệnh tự động',
+    hero_chip4_title: 'Hỗ Trợ 24/7',
+    hero_chip4_sub: 'Zalo & Telegram',
   });
   const [products, setProducts] = useState<Product[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);

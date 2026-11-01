@@ -20,7 +20,8 @@ import {
   ChevronDown,
   ChevronUp,
   Database,
-  AlertTriangle
+  AlertTriangle,
+  Sparkles
 } from 'lucide-react';
 
 const ACCENT_PRESETS = [
@@ -39,8 +40,23 @@ export const StoreSettingsManager: React.FC = () => {
     bank_id: settings.bank_id || 'MBBank',
     bank_account: settings.bank_account || '2222226062005',
     bank_owner: settings.bank_owner || 'DANG BINH DUONG',
+    support_phone: settings.support_phone || '0865.087.784',
     sepay_api_token: settings.sepay_api_token || import.meta.env.VITE_SEPAY_API_TOKEN || '',
     auto_check_payment: settings.auto_check_payment ?? true,
+    hero_badge: settings.hero_badge || 'Bản Quyền Số • Kích Hoạt Tự Động',
+    hero_title: settings.hero_title || 'Tài khoản số chính hãng.',
+    hero_highlight: settings.hero_highlight || 'Giao ngay tức thì trong 10 giây.',
+    hero_description: settings.hero_description || 'Giải trí YouTube Premium, AI Gemini / Muse Pro và khóa học chuyên sâu với chính sách Bảo hành 1 đổi 1 trọn thời gian.',
+    hero_cta_primary: settings.hero_cta_primary || 'Khám Phá Sản Phẩm',
+    hero_cta_secondary: settings.hero_cta_secondary || 'Tư Vấn Zalo',
+    hero_chip1_title: settings.hero_chip1_title || 'Giao Tự Động',
+    hero_chip1_sub: settings.hero_chip1_sub || 'Trả tài khoản 24/7',
+    hero_chip2_title: settings.hero_chip2_title || 'Bảo Hành 1 Đổi 1',
+    hero_chip2_sub: settings.hero_chip2_sub || 'Trọn thời gian gói',
+    hero_chip3_title: settings.hero_chip3_title || 'VietQR MBBank',
+    hero_chip3_sub: settings.hero_chip3_sub || 'Khớp lệnh tự động',
+    hero_chip4_title: settings.hero_chip4_title || 'Hỗ Trợ 24/7',
+    hero_chip4_sub: settings.hero_chip4_sub || 'Zalo & Telegram',
   });
 
   useEffect(() => {
@@ -49,8 +65,23 @@ export const StoreSettingsManager: React.FC = () => {
       bank_id: settings.bank_id || 'MBBank',
       bank_account: settings.bank_account || '2222226062005',
       bank_owner: settings.bank_owner || 'DANG BINH DUONG',
+      support_phone: settings.support_phone || '0865.087.784',
       sepay_api_token: settings.sepay_api_token || import.meta.env.VITE_SEPAY_API_TOKEN || '',
       auto_check_payment: settings.auto_check_payment ?? true,
+      hero_badge: settings.hero_badge || 'Bản Quyền Số • Kích Hoạt Tự Động',
+      hero_title: settings.hero_title || 'Tài khoản số chính hãng.',
+      hero_highlight: settings.hero_highlight || 'Giao ngay tức thì trong 10 giây.',
+      hero_description: settings.hero_description || 'Giải trí YouTube Premium, AI Gemini / Muse Pro và khóa học chuyên sâu với chính sách Bảo hành 1 đổi 1 trọn thời gian.',
+      hero_cta_primary: settings.hero_cta_primary || 'Khám Phá Sản Phẩm',
+      hero_cta_secondary: settings.hero_cta_secondary || 'Tư Vấn Zalo',
+      hero_chip1_title: settings.hero_chip1_title || 'Giao Tự Động',
+      hero_chip1_sub: settings.hero_chip1_sub || 'Trả tài khoản 24/7',
+      hero_chip2_title: settings.hero_chip2_title || 'Bảo Hành 1 Đổi 1',
+      hero_chip2_sub: settings.hero_chip2_sub || 'Trọn thời gian gói',
+      hero_chip3_title: settings.hero_chip3_title || 'VietQR MBBank',
+      hero_chip3_sub: settings.hero_chip3_sub || 'Khớp lệnh tự động',
+      hero_chip4_title: settings.hero_chip4_title || 'Hỗ Trợ 24/7',
+      hero_chip4_sub: settings.hero_chip4_sub || 'Zalo & Telegram',
     });
   }, [settings]);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -402,6 +433,181 @@ export const StoreSettingsManager: React.FC = () => {
                   onChange={(e) => setFormData({ ...formData, support_telegram: e.target.value })}
                   placeholder="https://t.me/bduongstore"
                   className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* CARD: HERO BANNER & HOMEPAGE CONTENT CMS */}
+        <div className="glass-card rounded-3xl p-6 border border-black/5 dark:border-white/10 space-y-5 md:col-span-2">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between pb-3 border-b border-black/5 dark:border-white/5 gap-2">
+            <div className="flex items-center space-x-2 font-semibold text-sm">
+              <Sparkles className="w-4 h-4 text-accent" strokeWidth={1.5} />
+              <span>Nội Dung Banner Trang Chủ (Hero Section CMS)</span>
+            </div>
+            <span className="text-[11px] text-gray-500">Tùy biến tiêu đề, câu slogan, nút bấm và 4 thẻ tính năng</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div>
+              <label className="block text-gray-500 mb-1 font-medium">1. Huy Hiệu Nhỏ (Hero Pill Badge)</label>
+              <input
+                type="text"
+                value={formData.hero_badge || ''}
+                onChange={(e) => setFormData({ ...formData, hero_badge: e.target.value })}
+                placeholder="Bản Quyền Số • Kích Hoạt Tự Động"
+                className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs focus:outline-none focus:ring-2 focus:ring-accent font-medium"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-500 mb-1 font-medium">2. Tiêu Đề Chính Dòng 1</label>
+              <input
+                type="text"
+                value={formData.hero_title || ''}
+                onChange={(e) => setFormData({ ...formData, hero_title: e.target.value })}
+                placeholder="Tài khoản số chính hãng."
+                className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs focus:outline-none focus:ring-2 focus:ring-accent font-bold"
+              />
+            </div>
+
+            <div>
+              <label className="block text-gray-500 mb-1 font-medium text-accent">3. Tiêu Đề Nổi Bật Dòng 2 (Màu Xanh)</label>
+              <input
+                type="text"
+                value={formData.hero_highlight || ''}
+                onChange={(e) => setFormData({ ...formData, hero_highlight: e.target.value })}
+                placeholder="Giao ngay tức thì trong 10 giây."
+                className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-accent/40 text-xs focus:outline-none focus:ring-2 focus:ring-accent font-extrabold text-accent"
+              />
+            </div>
+          </div>
+
+          {/* Description & Buttons */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-gray-500 mb-1 font-medium">4. Đoạn Giới Thiệu Ngắn (Description)</label>
+              <textarea
+                rows={2}
+                value={formData.hero_description || ''}
+                onChange={(e) => setFormData({ ...formData, hero_description: e.target.value })}
+                placeholder="Giải trí YouTube Premium, AI Gemini / Muse Pro và khóa học chuyên sâu với chính sách Bảo hành 1 đổi 1 trọn thời gian."
+                className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs focus:outline-none focus:ring-2 focus:ring-accent leading-relaxed"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <div>
+                <label className="block text-gray-500 mb-1 font-medium">5. Nút Bấm Chính (Primary CTA)</label>
+                <input
+                  type="text"
+                  value={formData.hero_cta_primary || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_cta_primary: e.target.value })}
+                  placeholder="Khám Phá Sản Phẩm"
+                  className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs focus:outline-none focus:ring-2 focus:ring-accent font-semibold"
+                />
+              </div>
+              <div>
+                <label className="block text-gray-500 mb-1 font-medium">6. Nút Bấm Phụ (Secondary CTA)</label>
+                <input
+                  type="text"
+                  value={formData.hero_cta_secondary || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_cta_secondary: e.target.value })}
+                  placeholder="Tư Vấn Zalo"
+                  className="w-full px-3 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs focus:outline-none focus:ring-2 focus:ring-accent"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* 4 Feature Chips */}
+          <div className="pt-3 border-t border-black/5 dark:border-white/5 space-y-2">
+            <label className="block text-gray-600 dark:text-gray-300 font-semibold">
+              7. 4 Thẻ Tính Năng Nổi Bật Dưới Banner (4 Feature Chips):
+            </label>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+              {/* Chip 1 */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 space-y-2">
+                <span className="text-[11px] font-bold text-amber-500 flex items-center gap-1">
+                  <Zap className="w-3.5 h-3.5" /> Thẻ 1 (Sấm Sét)
+                </span>
+                <input
+                  type="text"
+                  value={formData.hero_chip1_title || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_chip1_title: e.target.value })}
+                  placeholder="Giao Tự Động"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs font-semibold"
+                />
+                <input
+                  type="text"
+                  value={formData.hero_chip1_sub || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_chip1_sub: e.target.value })}
+                  placeholder="Trả tài khoản 24/7"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-[11px] text-gray-500"
+                />
+              </div>
+
+              {/* Chip 2 */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 space-y-2">
+                <span className="text-[11px] font-bold text-emerald-500 flex items-center gap-1">
+                  <ShieldCheck className="w-3.5 h-3.5" /> Thẻ 2 (Bảo Hành)
+                </span>
+                <input
+                  type="text"
+                  value={formData.hero_chip2_title || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_chip2_title: e.target.value })}
+                  placeholder="Bảo Hành 1 Đổi 1"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs font-semibold"
+                />
+                <input
+                  type="text"
+                  value={formData.hero_chip2_sub || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_chip2_sub: e.target.value })}
+                  placeholder="Trọn thời gian gói"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-[11px] text-gray-500"
+                />
+              </div>
+
+              {/* Chip 3 */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 space-y-2">
+                <span className="text-[11px] font-bold text-blue-500 flex items-center gap-1">
+                  <CreditCard className="w-3.5 h-3.5" /> Thẻ 3 (VietQR)
+                </span>
+                <input
+                  type="text"
+                  value={formData.hero_chip3_title || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_chip3_title: e.target.value })}
+                  placeholder="VietQR MBBank"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs font-semibold"
+                />
+                <input
+                  type="text"
+                  value={formData.hero_chip3_sub || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_chip3_sub: e.target.value })}
+                  placeholder="Khớp lệnh tự động"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-[11px] text-gray-500"
+                />
+              </div>
+
+              {/* Chip 4 */}
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 space-y-2">
+                <span className="text-[11px] font-bold text-purple-500 flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5" /> Thẻ 4 (Hỗ Trợ)
+                </span>
+                <input
+                  type="text"
+                  value={formData.hero_chip4_title || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_chip4_title: e.target.value })}
+                  placeholder="Hỗ Trợ 24/7"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-xs font-semibold"
+                />
+                <input
+                  type="text"
+                  value={formData.hero_chip4_sub || ''}
+                  onChange={(e) => setFormData({ ...formData, hero_chip4_sub: e.target.value })}
+                  placeholder="Zalo & Telegram"
+                  className="w-full px-2.5 py-1.5 rounded-lg bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/10 text-[11px] text-gray-500"
                 />
               </div>
             </div>
