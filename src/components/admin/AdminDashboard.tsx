@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useStore } from '../../context/StoreContext';
 import { formatVND } from '../../lib/utils';
+import { isSupabaseConfigured } from '../../lib/supabase';
 import { ProductManager } from './ProductManager';
 import { StockManager } from './StockManager';
 import { OrderManager } from './OrderManager';
@@ -60,11 +61,18 @@ export const AdminDashboard: React.FC<AdminDashboardProps> = ({ onBackToHome }) 
           </p>
         </div>
 
-        <div className="flex items-center space-x-2">
-          <span className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            <span>Hệ Thống Trực Tuyến 24/7</span>
-          </span>
+        <div className="flex flex-wrap items-center gap-2">
+          {isSupabaseConfigured ? (
+            <span className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Supabase Cloud Kết Nối Thực Tế</span>
+            </span>
+          ) : (
+            <span className="inline-flex items-center space-x-1.5 px-3 py-1.5 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold" title="Đang chạy fallback LocalStorage. Hãy thêm VITE_SUPABASE_URL & VITE_SUPABASE_ANON_KEY trên Vercel và bấm Redeploy.">
+              <span className="w-2 h-2 rounded-full bg-amber-500" />
+              <span>LocalStorage Demo (Chưa nối Supabase)</span>
+            </span>
+          )}
         </div>
       </div>
 

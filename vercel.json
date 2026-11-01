@@ -6,7 +6,7 @@
       "destination": "https://my.sepay.vn/userapi/:path*"
     },
     {
-      "source": "/(.*)",
+      "source": "/((?!api/).*)",
       "destination": "/index.html"
     }
   ]

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useStore } from '../../context/StoreContext';
+import { getSupabaseDiagnostics } from '../../lib/supabase';
 import { 
   Palette, 
   CreditCard, 
@@ -17,7 +18,9 @@ import {
   Webhook,
   Copy,
   ChevronDown,
-  ChevronUp
+  ChevronUp,
+  Database,
+  AlertTriangle
 } from 'lucide-react';
 
 const ACCENT_PRESETS = [
@@ -394,6 +397,71 @@ export const StoreSettingsManager: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* CARD 3: SUPABASE DATABASE HEALTH & DIAGNOSTICS */}
+      {(() => {
+        const diag = getSupabaseDiagnostics();
+        return (
+          <div className="glass-card rounded-3xl p-6 border border-black/5 dark:border-white/10 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-black/5 dark:border-white/5">
+              <div className="flex items-center space-x-2 font-semibold text-sm">
+                <Database className="w-4 h-4 text-accent" strokeWidth={1.5} />
+                <span>Trạng Thái Kết Nối Supabase Cloud (Database Health)</span>
+              </div>
+              <div>
+                {diag.isConfigured ? (
+                  <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs font-semibold">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span>Đã Kết Nối Thực Tế (Cloud Active)</span>
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center space-x-1.5 px-3 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 text-xs font-semibold">
+                    <AlertTriangle className="w-3.5 h-3.5" />
+                    <span>LocalStorage Fallback (Chưa Nối Supabase)</span>
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="p-3.5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 space-y-1">
+                <span className="text-[10px] text-gray-400 uppercase font-semibold block">VITE_SUPABASE_URL</span>
+                <p className="font-mono text-xs text-gray-800 dark:text-gray-200">
+                  {diag.maskedUrl}
+                </p>
+                <span className={`text-[10px] ${diag.urlValid ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {diag.urlValid ? '✓ Định dạng URL hợp lệ' : '✗ Chưa cấu hình hoặc URL không hợp lệ'}
+                </span>
+              </div>
+
+              <div className="p-3.5 rounded-2xl bg-black/[0.02] dark:bg-white/[0.03] border border-black/5 dark:border-white/5 space-y-1">
+                <span className="text-[10px] text-gray-400 uppercase font-semibold block">VITE_SUPABASE_ANON_KEY</span>
+                <p className="font-mono text-xs text-gray-800 dark:text-gray-200">
+                  {diag.maskedKey}
+                </p>
+                <span className={`text-[10px] ${diag.keyValid ? 'text-emerald-600' : 'text-amber-600'}`}>
+                  {diag.keyValid ? '✓ Public Key hợp lệ' : '✗ Chưa cấu hình hoặc Key không hợp lệ'}
+                </span>
+              </div>
+            </div>
+
+            {!diag.isConfigured && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs space-y-2 text-amber-900 dark:text-amber-200">
+                <p className="font-bold flex items-center gap-1.5">
+                  <AlertTriangle className="w-4 h-4 text-amber-600" />
+                  <span>Cách kích hoạt kết nối Supabase Cloud trên Vercel:</span>
+                </p>
+                <ol className="list-decimal list-inside space-y-1 text-[11px] leading-relaxed">
+                  <li>Truy cập <strong>Vercel Dashboard</strong> &rarr; Chọn dự án <strong>BDuong Store</strong> &rarr; Vào tab <strong>Settings</strong> &rarr; <strong>Environment Variables</strong>.</li>
+                  <li>Thêm 2 biến: <code>VITE_SUPABASE_URL</code> và <code>VITE_SUPABASE_ANON_KEY</code> lấy từ Supabase (Project Settings &rarr; API).</li>
+                  <li><strong>BƯỚC QUAN TRỌNG NHẤT:</strong> Vào tab <strong>Deployments</strong> trên Vercel &rarr; Bấm vào dấu <strong>...</strong> của bản deploy mới nhất &rarr; Chọn <strong>Redeploy</strong> (Vite cần build lại để nhúng biến môi trường vào code).</li>
+                  <li>Vào Supabase SQL Editor và chạy toàn bộ nội dung file <code>supabase_schema.sql</code>.</li>
+                </ol>
+              </div>
+            )}
+          </div>
+        );
+      })()}
     </form>
   );
 };
